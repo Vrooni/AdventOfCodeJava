@@ -1,20 +1,17 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class Day8_2 {
     record MapInformation(String left, String right) {
     }
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
-        String[] way = lines.remove(0).split("");
+    public String part2(List<String> lines) {
+        lines = new ArrayList<>(lines);
+        String[] way = lines.removeFirst().split("");
         Map<String, MapInformation> maps = new HashMap<>();
 
-        lines.remove(0);
+        lines.removeFirst();
 
         for (String line : lines) {
             String[] splitLine = line.split(" = ");
@@ -62,13 +59,12 @@ public class Day8_2 {
             }
 
             if (reachedEnd) {
-                System.out.println(endIndex);
-                break;
+                return String.valueOf(endIndex);
             }
         }
     }
 
-    private static List<List<String>> findCycles(String[] way, Map<String, MapInformation> maps) {
+    private List<List<String>> findCycles(String[] way, Map<String, MapInformation> maps) {
         List<String> currentKeys = new ArrayList<>(maps.keySet()
                 .stream()
                 .filter(key -> key.endsWith("A"))

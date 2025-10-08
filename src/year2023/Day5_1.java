@@ -1,19 +1,14 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Day5_1 {
     record MapInformation(long source, long destination, long length) {
     }
 
-    record Range(long from, long to) {
-    }
-
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part1(List<String> lines) {
         List<Long> seeds;
 
         long result = Long.MAX_VALUE;
@@ -26,7 +21,8 @@ public class Day5_1 {
         List<MapInformation> temperatureToHumidityMap = new ArrayList<>();
         List<MapInformation> humidityToLocationMap = new ArrayList<>();
 
-        String seedLine = lines.remove(0).replace("seeds: ", "");
+        lines = new ArrayList<>(lines);
+        String seedLine = lines.removeFirst().replace("seeds: ", "");
         seeds = Arrays.stream(seedLine.split(" "))
                 .map(Long::parseLong)
                 .toList();
@@ -51,10 +47,10 @@ public class Day5_1 {
             result = Math.min(location, result);
         }
 
-        System.out.println(result);
+        return String.valueOf(result);
     }
 
-    private static List<String> extractMapInformation(List<String> lines, List<MapInformation> map) {
+    private List<String> extractMapInformation(List<String> lines, List<MapInformation> map) {
         lines = lines.subList(2, lines.size());
         List<String> linesToDelete = new ArrayList<>();
 
@@ -77,7 +73,7 @@ public class Day5_1 {
         return lines;
     }
 
-    private static long getOrDefault(List<MapInformation> map, long key) {
+    private long getOrDefault(List<MapInformation> map, long key) {
         for (MapInformation entry : map) {
             if (key >= entry.source && key <= entry.source + entry.length) {
                 long offset = key - entry.source;

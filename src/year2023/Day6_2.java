@@ -1,15 +1,10 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class Day6_2 {
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
-
+    public String part2(List<String> lines) {
         long time = Long.parseLong(lines.get(0)
                 .replace("Time:", "")
                 .replaceAll(" ", ""));
@@ -36,6 +31,6 @@ public class Day6_2 {
             }
         }
 
-        System.out.println(maximumTime - minimumTime);
+        return String.valueOf(maximumTime - minimumTime);
     }
 }

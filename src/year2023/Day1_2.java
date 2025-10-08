@@ -1,15 +1,11 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Day1_2 {
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part2(List<String> lines) {
         int sum = 0;
 
         for (String line : lines) {
@@ -27,13 +23,13 @@ public class Day1_2 {
                 addNumber(numbers, line, i, i + 4, "nine", 9);
             }
 
-            sum += numbers.get(0) * 10 + numbers.get(numbers.size() - 1);
+            sum += numbers.getFirst() * 10 + numbers.getLast();
         }
 
-        System.out.println(sum);
+        return String.valueOf(sum);
     }
 
-    private static void addNumber(List<Integer> numbers, String s, int start, int end, String toReplace,
+    private void addNumber(List<Integer> numbers, String s, int start, int end, String toReplace,
             int replacement) {
         String number = s.substring(start, start + 1);
         if (isNumeric(number)) {
@@ -50,7 +46,7 @@ public class Day1_2 {
         }
     }
 
-    private static boolean isNumeric(String s) {
+    private boolean isNumeric(String s) {
         try {
             Double.parseDouble(s);
             return true;

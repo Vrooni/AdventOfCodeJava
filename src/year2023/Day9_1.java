@@ -14,7 +14,7 @@ public class Day9_1 {
         for (String line : lines) {
             List<Integer> input = readInput(line);
             List<List<Integer>> history = readHistory(input);
-            history.get(history.size() - 1).add(0);
+            history.getLast().add(0);
 
             for (int i = history.size() - 2; i >= 0; i--) {
                 List<Integer> list = history.get(i);

@@ -1,9 +1,9 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Day16_1 {
     private static Set<Beam> history = new HashSet<>();
@@ -18,12 +18,11 @@ public class Day16_1 {
         RIGHT, LEFT, UP, DOWN
     }
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
-        System.out.println(getEnergized(0, 0, Direction.RIGHT, lines));
+    public String part1(List<String> lines) {
+        return String.valueOf(getEnergized(0, 0, Direction.RIGHT, lines));
     }
 
-    private static int getEnergized(int x, int y, Direction direction, List<String> lines) {
+    private int getEnergized(int x, int y, Direction direction, List<String> lines) {
         List<Beam> beams = new ArrayList<>();
         history = new HashSet<>();
 
@@ -39,7 +38,7 @@ public class Day16_1 {
         return getEnergized().size();
     }
 
-    private static List<Beam> move(List<Beam> beams) {
+    private List<Beam> move(List<Beam> beams) {
         List<Beam> newBeams = new ArrayList<>();
 
         for (Beam beam : beams) {
@@ -55,7 +54,7 @@ public class Day16_1 {
         return newBeams;
     }
 
-    private static List<Beam> handleCollision(List<Beam> beams, List<String> lines) {
+    private List<Beam> handleCollision(List<Beam> beams, List<String> lines) {
         List<Beam> newBeams = new ArrayList<>();
 
         for (Beam beam : beams) {
@@ -103,21 +102,21 @@ public class Day16_1 {
         return newBeams;
     }
 
-    private static List<Beam> filter(List<Beam> beams, List<String> lines) {
+    private List<Beam> filter(List<Beam> beams, List<String> lines) {
         beams = beams.stream().filter(beam -> !isOutOfRange(beam, lines) && !history.contains(beam)).toList();
         history.addAll(new ArrayList<>(beams));
 
         return beams;
     }
 
-    private static boolean isOutOfRange(Beam beam, List<String> lines) {
+    private boolean isOutOfRange(Beam beam, List<String> lines) {
         int x = beam.point.x;
         int y = beam.point.y;
 
         return y < 0 || y >= lines.size() || x < 0 || x >= lines.get(0).length();
     }
 
-    private static List<Point> getEnergized() {
+    private List<Point> getEnergized() {
         List<Point> energized = new ArrayList<>();
 
         for (Beam beam : history) {

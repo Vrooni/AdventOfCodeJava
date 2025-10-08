@@ -1,12 +1,10 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+package year2023;
+
 import java.util.List;
 
 public class Day2_2 {
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part2(List<String> lines) {
         int sum = 0;
 
         for (String line : lines) {
@@ -45,6 +43,6 @@ public class Day2_2 {
             sum += red * green * blue;
         }
 
-        System.out.println(sum);
+        return String.valueOf(sum);
     }
 }

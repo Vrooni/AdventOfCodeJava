@@ -1,8 +1,5 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,8 +9,7 @@ public class Day3_1 {
     record Point(int x, int y) {
     }
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part1(List<String> lines) {
         Map<Point, String> numbers = new HashMap<>();
         List<Point> symbols = new ArrayList<>();
 
@@ -50,10 +46,10 @@ public class Day3_1 {
             }
         }
 
-        System.out.println(sum);
+        return String.valueOf(sum);
     }
 
-    private static int findEnd(String line, int x) {
+    private int findEnd(String line, int x) {
         if (x >= line.length() - 1 || !isNumeric(line.substring(x + 1, x + 2))) {
             return x;
         }
@@ -61,7 +57,7 @@ public class Day3_1 {
         return findEnd(line, x + 1);
     }
 
-    private static boolean isNumeric(String s) {
+    private boolean isNumeric(String s) {
         try {
             Double.parseDouble(s);
             return true;

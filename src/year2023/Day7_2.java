@@ -1,18 +1,14 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class Day7_2 {
     record HandInformation(String cards, int points, int type) {
     }
 
-    private static final Map<Character, Integer> ranking = new HashMap<>();
+    private final Map<Character, Integer> ranking = new HashMap<>();
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part2(List<String> lines) {
         List<HandInformation> hands = new ArrayList<>();
         initRankingMap();
 
@@ -30,14 +26,13 @@ public class Day7_2 {
             sum += (i + 1) * hands.get(i).points;
         }
 
-        System.out.println(sum);
+        return String.valueOf(sum);
     }
 
-    private static void initRankingMap() {
+    private void initRankingMap() {
         ranking.put('A', 13);
         ranking.put('K', 12);
         ranking.put('Q', 11);
-        ranking.put('J', 10);
         ranking.put('T', 9);
         ranking.put('9', 8);
         ranking.put('8', 7);
@@ -50,7 +45,7 @@ public class Day7_2 {
         ranking.put('J', 0);
     }
 
-    private static void rankHands(List<HandInformation> hands) {
+    private void rankHands(List<HandInformation> hands) {
         hands.sort((o1, o2) -> {
             if (o1.type > o2.type) {
                 return 1;
@@ -73,9 +68,7 @@ public class Day7_2 {
         });
     }
 
-    private static int getType(String cards) {
-        cards.replaceAll("J", "");
-
+    private int getType(String cards) {
         Map<Character, Integer> numberCountMap = new HashMap<>();
         for (char card : cards.toCharArray()) {
             numberCountMap.put(card, numberCountMap.getOrDefault(card, 0) + 1);
@@ -106,7 +99,7 @@ public class Day7_2 {
         }
     }
 
-    public static int max(Collection<Integer> numbers) {
+    public int max(Collection<Integer> numbers) {
         try {
             return Collections.max(numbers);
         } catch (NoSuchElementException ex) {

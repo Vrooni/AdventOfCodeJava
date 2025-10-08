@@ -1,20 +1,20 @@
-import java.io.IOException;
+package year2015;
+
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 public class Day4_1 {
-    private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
+    private final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
 
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
-        String keyPrefix = Files.readString(Paths.get(args[0])).trim();
+    public String part1(List<String> lines) throws NoSuchAlgorithmException {
+        String keyPrefix = lines.getFirst();
         int number = getNumber(keyPrefix, 0, 5);
-        System.out.println(number);
+        return String.valueOf(number);
     }
 
-    private static String bytesToHex(byte[] bytes) {
+    private String bytesToHex(byte[] bytes) {
         byte[] hexChars = new byte[bytes.length * 2];
 
         for (int j = 0; j < bytes.length; j++) {
@@ -25,7 +25,7 @@ public class Day4_1 {
         return new String(hexChars, StandardCharsets.UTF_8);
     }
 
-    private static int getNumber(String keyPrefix, int startNumber, int zeros) throws NoSuchAlgorithmException {
+    private int getNumber(String keyPrefix, int startNumber, int zeros) throws NoSuchAlgorithmException {
         MessageDigest md5 = MessageDigest.getInstance("MD5");
         boolean notFiveZeros = true;
 

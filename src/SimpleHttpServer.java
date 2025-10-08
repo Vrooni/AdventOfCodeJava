@@ -90,8 +90,8 @@ public class SimpleHttpServer {
             try {
                 response = getSolution(year, day, part, input);
             } catch (Exception e) {
-                status = 404;
-                response = "Solution not found";
+                status = 400;
+                response = "Invalid input";
             }
 
             exchange.sendResponseHeaders(status, response.getBytes().length);
@@ -102,23 +102,9 @@ public class SimpleHttpServer {
     }
 
     private static String getCode(String year, String day, String part) throws IOException {
-        Path path = Path.of("src/year" + year + "/Day" + day + ".java");
+        Path path = Path.of("src/year" + year + "/Day" + day + "_" + part + ".java");
         List<String> lines = Files.readAllLines(path);
-
-        StringBuilder code = new StringBuilder();
-        boolean inside = false;
-
-        for (String line : lines) {
-            if (line.contains("// START part" + part)) {
-                inside = true;
-            } else if (line.contains("// END part" + part)) {
-                break;
-            } else if (inside) {
-                code.append(line.replaceFirst(" {4}", "")).append("\n");
-            }
-        }
-
-        return code.toString();
+        return String.join("\n", lines);
     }
 
     private static String getSolution(String year, String day, String part, List<String> input) throws
@@ -128,7 +114,7 @@ public class SimpleHttpServer {
             IllegalAccessException,
             InstantiationException
     {
-        String className =  "year" + year + ".Day" + day;
+        String className =  "year" + year + ".Day" + day + "_" + part;
         Class<?> clazz = Class.forName(className);
         Object instance = clazz.getDeclaredConstructor().newInstance();
 

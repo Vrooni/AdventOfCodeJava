@@ -1,6 +1,5 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+package year2015;
+
 import java.util.List;
 
 public class Day6_1 {
@@ -11,8 +10,7 @@ public class Day6_1 {
         ON, OFF, TOGGLE
     }
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part1(List<String> lines) {
         boolean[][] lights = new boolean[1000][1000];
 
         for (String line : lines) {
@@ -33,10 +31,10 @@ public class Day6_1 {
             }
         }
 
-        System.out.println(getCount(lights));
+        return String.valueOf(getCount(lights));
     }
 
-    private static boolean[][] switchLights(String line, Operation operation, boolean[][] lights) {
+    private boolean[][] switchLights(String line, Operation operation, boolean[][] lights) {
         String[] points = line.split(" through ");
 
         Point from = fromString(points[0]);
@@ -52,7 +50,7 @@ public class Day6_1 {
         return newLights;
     }
 
-    private static Point fromString(String s) {
+    private Point fromString(String s) {
         String[] coordinates = s.split(",");
 
         int x = Integer.parseInt(coordinates[0]);
@@ -61,7 +59,7 @@ public class Day6_1 {
         return new Point(x, y);
     }
 
-    private static boolean[][] turnOn(boolean[][] lights, Point from, Point to) {
+    private boolean[][] turnOn(boolean[][] lights, Point from, Point to) {
         for (int y = from.y; y <= to.y; y++) {
             for (int x = from.x; x <= to.x; x++) {
                 lights[y][x] = true;
@@ -71,7 +69,7 @@ public class Day6_1 {
         return lights;
     }
 
-    private static boolean[][] turnOff(boolean[][] lights, Point from, Point to) {
+    private boolean[][] turnOff(boolean[][] lights, Point from, Point to) {
         for (int y = from.y; y <= to.y; y++) {
             for (int x = from.x; x <= to.x; x++) {
                 lights[y][x] = false;
@@ -81,7 +79,7 @@ public class Day6_1 {
         return lights;
     }
 
-    private static boolean[][] toggle(boolean[][] lights, Point from, Point to) {
+    private boolean[][] toggle(boolean[][] lights, Point from, Point to) {
         for (int y = from.y; y <= to.y; y++) {
             for (int x = from.x; x <= to.x; x++) {
                 lights[y][x] = !lights[y][x];
@@ -91,7 +89,7 @@ public class Day6_1 {
         return lights;
     }
 
-    private static int getCount(boolean[][] lights) {
+    private int getCount(boolean[][] lights) {
         int count = 0;
         for (int y = 0; y <= 999; y++) {
             for (int x = 0; x <= 999; x++) {

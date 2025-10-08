@@ -1,6 +1,5 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+package year2015;
+
 import java.util.List;
 
 public class Day6_2 {
@@ -11,8 +10,7 @@ public class Day6_2 {
         ON, OFF, TOGGLE
     }
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part2(List<String> lines) {
         int[][] lights = new int[1000][1000];
 
         for (String line : lines) {
@@ -29,14 +27,14 @@ public class Day6_2 {
                 lights = switchLights(line, Operation.TOGGLE, lights);
 
             } else {
-                System.out.println("Warnung: Keine Operation erkannt");
+                System.out.println("Warning: Unknown operation");
             }
         }
 
-        System.out.println(getCount(lights));
+        return String.valueOf(getCount(lights));
     }
 
-    private static int[][] switchLights(String line, Operation operation, int[][] lights) {
+    private int[][] switchLights(String line, Operation operation, int[][] lights) {
         String[] points = line.split(" through ");
 
         Point from = fromString(points[0]);
@@ -52,7 +50,7 @@ public class Day6_2 {
         return newLights;
     }
 
-    private static Point fromString(String s) {
+    private Point fromString(String s) {
         String[] coordinates = s.split(",");
 
         int x = Integer.parseInt(coordinates[0]);
@@ -61,7 +59,7 @@ public class Day6_2 {
         return new Point(x, y);
     }
 
-    private static int[][] turnOn(int[][] lights, Point from, Point to) {
+    private int[][] turnOn(int[][] lights, Point from, Point to) {
         for (int y = from.y; y <= to.y; y++) {
             for (int x = from.x; x <= to.x; x++) {
                 lights[y][x] = lights[y][x] + 1;
@@ -71,7 +69,7 @@ public class Day6_2 {
         return lights;
     }
 
-    private static int[][] turnOff(int[][] lights, Point from, Point to) {
+    private int[][] turnOff(int[][] lights, Point from, Point to) {
         for (int y = from.y; y <= to.y; y++) {
             for (int x = from.x; x <= to.x; x++) {
                 lights[y][x] = Math.max(0, lights[y][x] - 1);
@@ -81,7 +79,7 @@ public class Day6_2 {
         return lights;
     }
 
-    private static int[][] toggle(int[][] lights, Point from, Point to) {
+    private int[][] toggle(int[][] lights, Point from, Point to) {
         for (int y = from.y; y <= to.y; y++) {
             for (int x = from.x; x <= to.x; x++) {
                 lights[y][x] = lights[y][x] + 2;
@@ -91,7 +89,7 @@ public class Day6_2 {
         return lights;
     }
 
-    private static int getCount(int[][] lights) {
+    private int getCount(int[][] lights) {
         int count = 0;
         for (int y = 0; y <= 999; y++) {
             for (int x = 0; x <= 999; x++) {

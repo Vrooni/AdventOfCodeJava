@@ -1,14 +1,10 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class Day2_1 {
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part1(List<String> lines) {
         int sum = 0;
 
         for (String line : lines) {
@@ -40,10 +36,10 @@ public class Day2_1 {
             }
         }
 
-        System.out.println(sum);
+        return String.valueOf(sum);
     }
 
-    private static boolean isPossible(String color, int count) {
+    private boolean isPossible(String color, int count) {
         switch (color) {
             case "red":
                 if (count > 12) {

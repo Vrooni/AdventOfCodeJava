@@ -1,18 +1,17 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Day7_1 {
     record HandInformation(String cards, int points, int type) {
     }
 
-    private static final Map<Character, Integer> ranking = new HashMap<>();
+    private final Map<Character, Integer> ranking = new HashMap<>();
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part1(List<String> lines) {
         List<HandInformation> hands = new ArrayList<>();
         initRankingMap();
         int sum = 0;
@@ -30,10 +29,10 @@ public class Day7_1 {
             sum += (i + 1) * hands.get(i).points;
         }
 
-        System.out.println(sum);
+        return String.valueOf(sum);
     }
 
-    private static void initRankingMap() {
+    private void initRankingMap() {
         ranking.put('A', 13);
         ranking.put('K', 12);
         ranking.put('Q', 11);
@@ -49,7 +48,7 @@ public class Day7_1 {
         ranking.put('2', 1);
     }
 
-    private static void rankHands(List<HandInformation> hands) {
+    private void rankHands(List<HandInformation> hands) {
         hands.sort((o1, o2) -> {
             if (o1.type > o2.type) {
                 return 1;
@@ -72,7 +71,7 @@ public class Day7_1 {
         });
     }
 
-    private static int getType(String cards) {
+    private int getType(String cards) {
         Map<Character, Integer> numberCountMap = new HashMap<>();
         for (char card : cards.toCharArray()) {
             numberCountMap.put(card, numberCountMap.getOrDefault(card, 0) + 1);

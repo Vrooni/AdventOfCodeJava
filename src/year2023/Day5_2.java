@@ -1,9 +1,9 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class Day5_2 {
     record MapInformation(long source, long destination, long length) {
@@ -12,11 +12,8 @@ public class Day5_2 {
     record Range(long from, long to) {
     }
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part2(List<String> lines) {
         List<Long> seeds;
-
-        long result = Long.MAX_VALUE;
 
         List<MapInformation> seedToSoilMap = new ArrayList<>();
         List<MapInformation> soilToFertilizerMap = new ArrayList<>();
@@ -26,7 +23,8 @@ public class Day5_2 {
         List<MapInformation> temperatureToHumidityMap = new ArrayList<>();
         List<MapInformation> humidityToLocationMap = new ArrayList<>();
 
-        String seedLine = lines.remove(0).replace("seeds: ", "");
+        lines = new ArrayList<>(lines);
+        String seedLine = lines.removeFirst().replace("seeds: ", "");
         seeds = Arrays.stream(seedLine.split(" "))
                 .map(Long::parseLong)
                 .toList();
@@ -60,12 +58,12 @@ public class Day5_2 {
         humidityRanges = mapRange(temperatureToHumidityMap, temperatureRanges);
         locationRanges = mapRange(humidityToLocationMap, humidityRanges);
 
-        result = Collections.min(locationRanges.stream().map(range -> range.from).toList());
+        long result = Collections.min(locationRanges.stream().map(range -> range.from).toList());
 
-        System.out.println(result);
+        return String.valueOf(result);
     }
 
-    private static List<String> extractMapInformation(List<String> lines, List<MapInformation> map) {
+    private List<String> extractMapInformation(List<String> lines, List<MapInformation> map) {
         lines = lines.subList(2, lines.size());
         List<String> linesToDelete = new ArrayList<>();
 
@@ -88,7 +86,7 @@ public class Day5_2 {
         return lines;
     }
 
-    private static List<Range> mapRange(List<MapInformation> map, List<Range> ranges) {
+    private List<Range> mapRange(List<MapInformation> map, List<Range> ranges) {
         List<Range> mappedRanges = new ArrayList<>();
 
         while (!ranges.isEmpty()) {
@@ -132,7 +130,7 @@ public class Day5_2 {
         return mappedRanges;
     }
 
-    private static Range getIntersection(Range range, MapInformation entry) {
+    private Range getIntersection(Range range, MapInformation entry) {
         return new Range(
                 Math.max(range.from, entry.source),
                 Math.min(range.to, entry.source + entry.length));
