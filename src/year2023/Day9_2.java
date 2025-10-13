@@ -1,33 +1,30 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Day9_2 {
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part2(List<String> lines) {
         int result = 0;
 
         for (String line : lines) {
             List<Integer> input = readInput(line);
             List<List<Integer>> history = readHistory(input);
-            history.get(history.size() - 1).add(0, 0);
+            history.getLast().addFirst(0);
 
             for (int i = history.size() - 2; i >= 0; i--) {
                 List<Integer> list = history.get(i);
-                list.add(0, history.get(i).get(0) - history.get(i + 1).get(0));
+                list.addFirst(history.get(i).getFirst() - history.get(i + 1).getFirst());
             }
 
-            result += history.get(0).get(0);
+            result += history.getFirst().getFirst();
         }
 
-        System.out.println(result);
+        return String.valueOf(result);
     }
 
-    public static List<Integer> readInput(String line) {
+    public List<Integer> readInput(String line) {
         List<Integer> input = new ArrayList<>();
 
         for (String number : line.split(" ")) {
@@ -37,7 +34,7 @@ public class Day9_2 {
         return input;
     }
 
-    public static List<List<Integer>> readHistory(List<Integer> input) {
+    public List<List<Integer>> readHistory(List<Integer> input) {
         List<List<Integer>> history = new ArrayList<>();
         history.add(input);
 

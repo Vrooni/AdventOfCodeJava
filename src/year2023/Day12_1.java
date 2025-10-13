@@ -1,18 +1,17 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Day12_1 {
     record SpringInformation(String springs, List<Integer> damagedSprings) {
     }
 
-    private static Map<SpringInformation, Long> memoization = new HashMap<>();
+    private final Map<SpringInformation, Long> memoization = new HashMap<>();
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part1(List<String> lines) {
         long result = 0;
 
         for (String line : lines) {
@@ -24,16 +23,16 @@ public class Day12_1 {
             result += getCombinations(springs, damagedSprings);
         }
 
-        System.out.println(result);
+        return String.valueOf(result);
     }
 
-    private static List<Integer> getDamagedSprings(String damagedSprings) {
+    private List<Integer> getDamagedSprings(String damagedSprings) {
         return Arrays.stream(damagedSprings.split(","))
                 .map(Integer::parseInt)
                 .toList();
     }
 
-    private static long getCombinations(String springs, List<Integer> damagedSprings) {
+    private long getCombinations(String springs, List<Integer> damagedSprings) {
         long combinations = 0;
 
         SpringInformation springInformation = new SpringInformation(springs, damagedSprings);
@@ -57,7 +56,7 @@ public class Day12_1 {
                     break;
                 }
 
-                int damaged = damagedSprings.get(0);
+                int damaged = damagedSprings.getFirst();
                 if (damaged > springs.length()) {
                     break;
                 }

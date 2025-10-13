@@ -1,14 +1,11 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Day13_2 {
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part2(List<String> lines) {
         int result = 0;
 
         while (!lines.isEmpty()) {
@@ -22,13 +19,13 @@ public class Day13_2 {
             lines = index == -1 ? new ArrayList<>() : lines.subList(index + 1, lines.size());
         }
 
-        System.out.println(result);
+        return String.valueOf(result);
     }
 
-    private static List<String> reverse(List<String> lines) {
+    private List<String> reverse(List<String> lines) {
         List<String> reversedLines = new ArrayList<>();
 
-        for (int i = 0; i < lines.get(0).length(); i++) {
+        for (int i = 0; i < lines.getFirst().length(); i++) {
             StringBuilder reversedLine = new StringBuilder();
 
             for (String line : lines) {
@@ -41,7 +38,7 @@ public class Day13_2 {
         return reversedLines;
     }
 
-    private static int getReflection(List<String> lines, boolean checkFlipped, int flippedIndex, int size) {
+    private int getReflection(List<String> lines, int flippedIndex, int size) {
         for (int i = 1; i < lines.size(); i++) {
             if (lines.get(i).equals(lines.get(i - 1))) {
                 boolean reflection = true;
@@ -54,13 +51,9 @@ public class Day13_2 {
                 }
 
                 if (reflection) {
-                    if (checkFlipped) {
-                        int reflectionLength = Math.min(size - i, i);
+                    int reflectionLength = Math.min(size - i, i);
 
-                        if (flippedIndex >= i - reflectionLength && flippedIndex <= i + reflectionLength - 1) {
-                            return i;
-                        }
-                    } else {
+                    if (flippedIndex >= i - reflectionLength && flippedIndex <= i + reflectionLength - 1) {
                         return i;
                     }
                 }
@@ -70,28 +63,28 @@ public class Day13_2 {
         return 0;
     }
 
-    private static int flipAndGetReflection(List<String> subLines) {
+    private int flipAndGetReflection(List<String> subLines) {
         for (int i = 0; i < subLines.size(); i++) {
             String subLine = subLines.get(i);
 
             for (int j = i + 1; j < subLines.size(); j++) {
                 List<Integer> indexesAtDifferences = new ArrayList<>();
 
-                for (int k = 0; k < subLine.toCharArray().length; k++) {
+                for (int k = 0; k < subLine.length(); k++) {
                     if (subLines.get(j).charAt(k) != subLine.charAt(k)) {
                         indexesAtDifferences.add(k);
                     }
                 }
 
                 if (indexesAtDifferences.size() == 1) {
-                    int idx = indexesAtDifferences.get(0);
+                    int idx = indexesAtDifferences.getFirst();
                     char difference = subLine.charAt(idx);
                     String flippedSubLine = subLine.substring(0, idx) + (difference == '#' ? '.' : '#')
                             + subLine.substring(idx + 1);
 
                     List<String> subLinesWithFlipped = new ArrayList<>(subLines);
                     subLinesWithFlipped.set(i, flippedSubLine);
-                    int reflection = getReflection(subLinesWithFlipped, true, i, subLines.size());
+                    int reflection = getReflection(subLinesWithFlipped, i, subLines.size());
 
                     if (reflection != 0) {
                         return reflection;

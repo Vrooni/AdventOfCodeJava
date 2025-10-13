@@ -1,9 +1,7 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Day11_2 {
     record Point(long x, long y) {
@@ -12,8 +10,7 @@ public class Day11_2 {
     record Combination(Point g1, Point g2) {
     }
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part2(List<String> lines) {
         List<List<Character>> universe = readInput(lines);
         List<Point> galaxies = getGalaxies(universe, 999999);
         List<Combination> combinations = getCombinations(galaxies);
@@ -24,10 +21,10 @@ public class Day11_2 {
             result += Math.abs(combination.g1.x - combination.g2.x) + Math.abs(combination.g1.y - combination.g2.y);
         }
 
-        System.out.println(result);
+        return String.valueOf(result);
     }
 
-    private static List<List<Character>> readInput(List<String> lines) {
+    private List<List<Character>> readInput(List<String> lines) {
         List<List<Character>> universe = new ArrayList<>();
 
         for (String line : lines) {
@@ -43,7 +40,7 @@ public class Day11_2 {
         return universe;
     }
 
-    private static List<Point> getGalaxies(List<List<Character>> universe, int expansion) {
+    private List<Point> getGalaxies(List<List<Character>> universe, int expansion) {
         List<Integer> linesToExpand = new ArrayList<>();
         List<Integer> columnsToExpand = new ArrayList<>();
 
@@ -61,7 +58,7 @@ public class Day11_2 {
         List<Point> galaxies = new ArrayList<>();
 
         for (int y = 0; y < universe.size(); y++) {
-            for (int x = 0; x < universe.get(0).size(); x++) {
+            for (int x = 0; x < universe.getFirst().size(); x++) {
                 if (universe.get(y).get(x) == '#') {
                     int finalX = x;
                     int finalY = y;
@@ -77,7 +74,7 @@ public class Day11_2 {
         return galaxies;
     }
 
-    private static List<Combination> getCombinations(List<Point> galaxies) {
+    private List<Combination> getCombinations(List<Point> galaxies) {
         List<Combination> combinations = new ArrayList<>();
 
         for (int i = 0; i < galaxies.size(); i++) {

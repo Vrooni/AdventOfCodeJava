@@ -1,18 +1,14 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class Day12_2 {
     record SpringInformation(String springs, List<Integer> damagedSprings) {
     }
 
-    private static Map<SpringInformation, Long> memoization = new HashMap<>();
+    private final Map<SpringInformation, Long> memoization = new HashMap<>();
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part2(List<String> lines) {
         long result = 0;
 
         for (String line : lines) {
@@ -24,16 +20,16 @@ public class Day12_2 {
             result += getCombinations(springs, damagedSprings);
         }
 
-        System.out.println(result);
+        return String.valueOf(result);
     }
 
-    private static List<Integer> getDamagedSprings(String damagedSprings) {
+    private List<Integer> getDamagedSprings(String damagedSprings) {
         return Arrays.stream(damagedSprings.split(","))
                 .map(Integer::parseInt)
                 .toList();
     }
 
-    private static String expandSprings(String springs) {
+    private String expandSprings(String springs) {
         StringBuilder expandedSprings = new StringBuilder(springs);
 
         for (int i = 0; i < 4; i++) {
@@ -43,7 +39,7 @@ public class Day12_2 {
         return expandedSprings.toString();
     }
 
-    private static List<Integer> expandDamagedSprings(List<Integer> damagedSprings) {
+    private List<Integer> expandDamagedSprings(List<Integer> damagedSprings) {
         List<Integer> expandedDamagedSprings = new ArrayList<>(damagedSprings);
 
         for (int i = 0; i < 4; i++) {
@@ -53,7 +49,7 @@ public class Day12_2 {
         return expandedDamagedSprings;
     }
 
-    private static long getCombinations(String springs, List<Integer> damagedSprings) {
+    private long getCombinations(String springs, List<Integer> damagedSprings) {
         long combinations = 0;
 
         SpringInformation springInformation = new SpringInformation(springs, damagedSprings);
@@ -77,7 +73,7 @@ public class Day12_2 {
                     break;
                 }
 
-                int damaged = damagedSprings.get(0);
+                int damaged = damagedSprings.getFirst();
                 if (damaged > springs.length()) {
                     break;
                 }

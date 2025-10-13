@@ -1,8 +1,5 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,8 +12,8 @@ public class Day10_2 {
     record Pipe(Point p1, Point p2) {
     }
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part2(List<String> lines) {
+        lines = new ArrayList<>(lines);
         Map<Point, Pipe> pipes = readInput(lines);
         Point start = getStart(lines);
         Point end = getEnd(pipes, start);
@@ -29,7 +26,7 @@ public class Day10_2 {
         int insideCount = 0;
 
         for (int y = 0; y < map.size(); y += 2) {
-            for (int x = 0; x < map.get(0).size(); x += 2) {
+            for (int x = 0; x < map.getFirst().size(); x += 2) {
                 if (map.get(y).subList(x, x + 2).stream().allMatch(c -> c == 'I') &&
                         map.get(y + 1).subList(x, x + 2).stream().allMatch(c -> c == 'I')) {
                     insideCount++;
@@ -37,10 +34,10 @@ public class Day10_2 {
             }
         }
 
-        System.out.println(insideCount);
+        return String.valueOf(insideCount);
     }
 
-    private static Map<Point, Pipe> readInput(List<String> lines) {
+    private Map<Point, Pipe> readInput(List<String> lines) {
         Map<Point, Pipe> pipes = new HashMap<>();
 
         for (int y = 0; y < lines.size(); y++) {
@@ -91,9 +88,9 @@ public class Day10_2 {
         return pipes;
     }
 
-    private static Point getStart(List<String> lines) {
+    private Point getStart(List<String> lines) {
         for (int y = 0; y < lines.size(); y++) {
-            for (int x = 0; x < lines.get(0).length(); x++) {
+            for (int x = 0; x < lines.getFirst().length(); x++) {
                 if (lines.get(y).charAt(x) == 'S') {
                     return new Point(x, y);
                 }
@@ -103,7 +100,7 @@ public class Day10_2 {
         return null;
     }
 
-    private static Point getEnd(Map<Point, Pipe> pipes, Point start) {
+    private Point getEnd(Map<Point, Pipe> pipes, Point start) {
         List<Point> currentPositions = new ArrayList<>();
         List<Point> previousPositions = new ArrayList<>();
 
@@ -139,7 +136,7 @@ public class Day10_2 {
         }
     }
 
-    private static List<Point> getHistory(Map<Point, Pipe> pipes, Point start, Point end) {
+    private List<Point> getHistory(Map<Point, Pipe> pipes, Point start, Point end) {
         List<Point> currentPositions = new ArrayList<>();
         List<Point> previousPositions = new ArrayList<>();
         List<Point> visited = new ArrayList<>();
@@ -178,11 +175,11 @@ public class Day10_2 {
         }
     }
 
-    private static List<List<Character>> getMap(List<String> lines, List<Point> visited) {
-        List<List<Character>> map = initMap(lines.size() * 2, lines.get(0).length() * 2);
+    private List<List<Character>> getMap(List<String> lines, List<Point> visited) {
+        List<List<Character>> map = initMap(lines.size() * 2, lines.getFirst().length() * 2);
 
         for (int y = 0; y < lines.size(); y++) {
-            for (int x = 0; x < lines.get(0).length(); x++) {
+            for (int x = 0; x < lines.getFirst().length(); x++) {
 
                 if (visited.contains(new Point(x, y))) {
 
@@ -262,7 +259,7 @@ public class Day10_2 {
         return map;
     }
 
-    private static void replaceStartWithPipe(List<String> lines, List<Point> visited, Point start) {
+    private void replaceStartWithPipe(List<String> lines, List<Point> visited, Point start) {
         char startPipe = getStartPipe(
                 visited.get(visited.size() - 3),
                 visited.get(visited.size() - 4),
@@ -273,7 +270,7 @@ public class Day10_2 {
         lines.set(start.y, lineWithStart);
     }
 
-    private static char getStartPipe(Point p1, Point p2, Point start) {
+    private char getStartPipe(Point p1, Point p2, Point start) {
         char p1Cardinal = getCardinal(start, p1);
         char p2Cardinal = getCardinal(start, p2);
 
@@ -294,7 +291,7 @@ public class Day10_2 {
         return 'E';
     }
 
-    private static char getCardinal(Point start, Point point) {
+    private char getCardinal(Point start, Point point) {
         if (start.x == point.x && start.y > point.y) {
             return 'N';
         } else if (start.x == point.x && start.y < point.y) {
@@ -306,11 +303,11 @@ public class Day10_2 {
         }
     }
 
-    private static void markInsideAndOutside(List<List<Character>> map) {
+    private void markInsideAndOutside(List<List<Character>> map) {
         for (int y = 0; y < map.size(); y++) {
             boolean inside = false;
 
-            for (int x = 0; x < map.get(0).size(); x++) {
+            for (int x = 0; x < map.getFirst().size(); x++) {
                 char symbol = map.get(y).get(x);
 
                 if (symbol == '.') {
@@ -322,7 +319,7 @@ public class Day10_2 {
         }
     }
 
-    private static List<List<Character>> initMap(int height, int width) {
+    private List<List<Character>> initMap(int height, int width) {
         List<List<Character>> map = new ArrayList<>();
 
         for (int i = 0; i < height; i++) {

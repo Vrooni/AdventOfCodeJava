@@ -1,21 +1,19 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Day15_1 {
 
-    public static void main(String[] args) throws IOException {
-        String input = Files.readString(Paths.get(args[0])).trim();
-        List<String> lines = List.of(input.split(","));
+    public String part1(List<String> lines) {
+        String input = lines.getFirst().trim();
+        lines = new ArrayList<>(List.of(input.split(",")));
 
-        int result = sum(lines.stream().map(Day15_1::getHash).toList());
-        System.out.println(result);
+        int result = sum(lines.stream().map(this::getHash).toList());
+        return String.valueOf(result);
     }
 
-    private static int getHash(String line) {
+    private int getHash(String line) {
         int result = 0;
 
         for (char c : line.replaceAll("\n", "").toCharArray()) {
@@ -27,7 +25,7 @@ public class Day15_1 {
         return result;
     }
 
-    private static int sum(List<Integer> numbers) {
+    private int sum(List<Integer> numbers) {
         return numbers.stream().mapToInt(a -> a).sum();
     }
 }

@@ -1,8 +1,5 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class Day17_2 {
@@ -16,14 +13,13 @@ public class Day17_2 {
     record Element(Node node, int heatLoss) {
     }
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part2(List<String> lines) {
         List<List<Integer>> map = lines.stream()
                 .map(line -> Arrays.stream(line.split("")).map(Integer::parseInt).toList()).toList();
 
         Set<Node> visited = new HashSet<>();
         Queue<Element> queue = new PriorityQueue<>(Comparator.comparingInt(element -> element.heatLoss));
-        queue.add(new Element(new Node(0, 1, Direction.DOWN, 1), map.get(1).get(0)));
+        queue.add(new Element(new Node(0, 1, Direction.DOWN, 1), map.get(1).getFirst()));
         queue.add(new Element(new Node(1, 0, Direction.RIGHT, 1), map.get(0).get(1)));
 
         int heatLoss = 0;
@@ -34,7 +30,7 @@ public class Day17_2 {
                 continue;
             }
 
-            if (current.node.x == map.get(0).size() - 1 && current.node.y == map.size() - 1
+            if (current.node.x == map.getFirst().size() - 1 && current.node.y == map.size() - 1
                     && current.node.sameDirection >= 4) {
                 heatLoss = current.heatLoss;
                 break;
@@ -44,10 +40,10 @@ public class Day17_2 {
             queue.addAll(getNeighbours(current, map));
         }
 
-        System.out.println(heatLoss);
+        return String.valueOf(heatLoss);
     }
 
-    private static List<Element> getNeighbours(Element element, List<List<Integer>> map) {
+    private List<Element> getNeighbours(Element element, List<List<Integer>> map) {
         List<Element> neighbours = new ArrayList<>();
         Node node = element.node;
 
@@ -98,7 +94,7 @@ public class Day17_2 {
         }
 
         // right
-        if (x + 1 < map.get(0).size() && node.direction != Direction.LEFT) {
+        if (x + 1 < map.getFirst().size() && node.direction != Direction.LEFT) {
             int sameDirection = node.sameDirection + 1;
             int heatLoss = element.heatLoss + map.get(y).get(x + 1);
 

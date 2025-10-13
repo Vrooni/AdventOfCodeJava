@@ -1,12 +1,12 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Day15_2 {
-    private static Map<String, Integer> hashMap = new HashMap<>();
+    private final Map<String, Integer> hashMap = new HashMap<>();
 
     private static class Box {
         List<Lens> lenses;
@@ -26,9 +26,9 @@ public class Day15_2 {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        String input = Files.readString(Paths.get(args[0])).trim();
-        List<String> lines = List.of(input.split(","));
+    public String part2(List<String> lines) {
+        String input = lines.getFirst().trim();
+        lines = List.of(input.split(","));
         List<Box> boxes = initBoxes();
 
         for (String line : lines) {
@@ -49,10 +49,10 @@ public class Day15_2 {
             }
         }
 
-        System.out.println(result);
+        return String.valueOf(result);
     }
 
-    private static int getHash(String line) {
+    private int getHash(String line) {
         int result = 0;
 
         for (char c : line.replaceAll("\n", "").toCharArray()) {
@@ -65,7 +65,7 @@ public class Day15_2 {
         return result;
     }
 
-    private static List<Box> initBoxes() {
+    private List<Box> initBoxes() {
         List<Box> boxes = new ArrayList<>();
 
         for (int i = 0; i < 256; i++) {
@@ -75,7 +75,7 @@ public class Day15_2 {
         return boxes;
     }
 
-    private static void insert(List<Box> boxes, String label, int focalLength) {
+    private void insert(List<Box> boxes, String label, int focalLength) {
         int boxIndex = hashMap.containsKey(label) ? hashMap.get(label) : getHash(label);
         int lensIndex = getLensIndex(boxes, label);
 
@@ -86,7 +86,7 @@ public class Day15_2 {
         }
     }
 
-    private static void delete(List<Box> boxes, String label) {
+    private void delete(List<Box> boxes, String label) {
         int boxIndex = hashMap.containsKey(label) ? hashMap.get(label) : getHash(label);
         int lensIndex = getLensIndex(boxes, label);
 
@@ -95,7 +95,7 @@ public class Day15_2 {
         }
     }
 
-    private static int getLensIndex(List<Box> boxes, String label) {
+    private int getLensIndex(List<Box> boxes, String label) {
         int boxIndex = hashMap.containsKey(label) ? hashMap.get(label) : getHash(label);
 
         Box box = boxes.get(boxIndex);

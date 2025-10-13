@@ -1,8 +1,5 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,8 +12,7 @@ public class Day10_1 {
     record Pipe(Point p1, Point p2) {
     }
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part1(List<String> lines) {
         Map<Point, Pipe> pipes = readInput(lines);
         Point start = getStart(lines);
 
@@ -51,15 +47,14 @@ public class Day10_1 {
             List<Point> previous = new ArrayList<>();
             for (Point currentPosition : currentPositions) {
                 if (previous.contains(currentPosition)) {
-                    System.out.println(steps);
-                    return;
+                    return String.valueOf(steps);
                 }
                 previous.add(currentPosition);
             }
         }
     }
 
-    private static Map<Point, Pipe> readInput(List<String> lines) {
+    private Map<Point, Pipe> readInput(List<String> lines) {
         Map<Point, Pipe> pipes = new HashMap<>();
 
         for (int y = 0; y < lines.size(); y++) {
@@ -110,9 +105,9 @@ public class Day10_1 {
         return pipes;
     }
 
-    private static Point getStart(List<String> lines) {
+    private Point getStart(List<String> lines) {
         for (int y = 0; y < lines.size(); y++) {
-            for (int x = 0; x < lines.get(0).length(); x++) {
+            for (int x = 0; x < lines.getFirst().length(); x++) {
                 if (lines.get(y).charAt(x) == 'S') {
                     return new Point(x, y);
                 }

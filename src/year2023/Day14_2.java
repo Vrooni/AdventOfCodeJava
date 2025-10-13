@@ -1,32 +1,29 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Day14_2 {
-    private static List<List<String>> history = new ArrayList<>();
-    private static final int TIMES = 1000000000;
+    private final List<List<String>> history = new ArrayList<>();
+    private final int TIMES = 1000000000;
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part2(List<String> lines) {
+        lines = new ArrayList<>(lines);
         int cycleIndex = findCycle(lines);
 
         for (int i = 0; i < cycleIndex; i++) {
-            history.remove(0);
+            history.removeFirst();
         }
 
         int endIndex = (TIMES - cycleIndex) % history.size() - 1;
         endIndex = endIndex == -1 ? history.size() - 1 : endIndex; // Underflow
 
         int result = getResult(history.get(endIndex));
-        System.out.println(result);
+        return String.valueOf(result);
     }
 
-    private static void roll(List<String> lines) {
-        for (int x = 0; x < lines.get(0).length(); x++) {
+    private void roll(List<String> lines) {
+        for (int x = 0; x < lines.getFirst().length(); x++) {
             for (int y = 0; y < lines.size(); y++) {
 
                 // roll to north
@@ -47,10 +44,10 @@ public class Day14_2 {
         }
     }
 
-    private static List<String> turn(List<String> lines) {
+    private List<String> turn(List<String> lines) {
         List<String> turnedLines = new ArrayList<>();
 
-        for (int x = 0; x < lines.get(0).length(); x++) {
+        for (int x = 0; x < lines.getFirst().length(); x++) {
             StringBuilder s = new StringBuilder();
             for (int y = lines.size() - 1; y >= 0; y--) {
                 s.append(lines.get(y).charAt(x));
@@ -62,7 +59,7 @@ public class Day14_2 {
         return turnedLines;
     }
 
-    private static int findCycle(List<String> lines) {
+    private int findCycle(List<String> lines) {
         for (int i = 0; i < TIMES; i++) {
             if (history.contains(lines)) {
                 return history.indexOf(lines);
@@ -82,7 +79,7 @@ public class Day14_2 {
         return -1;
     }
 
-    private static int getResult(List<String> lines) {
+    private int getResult(List<String> lines) {
         int result = 0;
 
         for (int i = 0; i < lines.size(); i++) {
@@ -93,7 +90,7 @@ public class Day14_2 {
         return result;
     }
 
-    private static String replace(String s, int index, char c) {
+    private String replace(String s, int index, char c) {
         return s.substring(0, index) + c + s.substring(index + 1);
     }
 }

@@ -1,22 +1,20 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Day14_1 {
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part1(List<String> lines) {
+        lines = new ArrayList<>(lines);
         roll(lines);
 
         int result = getResult(lines);
-        System.out.println(result);
+        return String.valueOf(result);
     }
 
-    private static void roll(List<String> lines) {
-        for (int x = 0; x < lines.get(0).length(); x++) {
+    private void roll(List<String> lines) {
+        for (int x = 0; x < lines.getFirst().length(); x++) {
             for (int y = 0; y < lines.size(); y++) {
 
                 // roll to north
@@ -37,7 +35,7 @@ public class Day14_1 {
         }
     }
 
-    private static int getResult(List<String> lines) {
+    private int getResult(List<String> lines) {
         int result = 0;
 
         for (int i = 0; i < lines.size(); i++) {
@@ -48,7 +46,7 @@ public class Day14_1 {
         return result;
     }
 
-    private static String replace(String s, int index, char c) {
+    private String replace(String s, int index, char c) {
         return s.substring(0, index) + c + s.substring(index + 1);
     }
 }

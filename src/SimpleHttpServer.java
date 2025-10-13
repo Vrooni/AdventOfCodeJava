@@ -31,7 +31,7 @@ public class SimpleHttpServer {
     private static class CodeHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-           String origin = exchange.getRequestHeaders().getFirst("Origin");
+            String origin = exchange.getRequestHeaders().getFirst("Origin");
 
             List<String> allowedOrigins = List.of("http://localhost:8888", "http://213.165.95.60");
             if (origin != null && allowedOrigins.contains(origin)) {

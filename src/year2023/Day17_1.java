@@ -1,8 +1,5 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class Day17_1 {
@@ -16,8 +13,7 @@ public class Day17_1 {
     record Element(Node node, int heatLoss) {
     }
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part1(List<String> lines) {
         List<List<Integer>> map = lines.stream()
                 .map(line -> Arrays.stream(line.split("")).map(Integer::parseInt).toList()).toList();
 
@@ -42,10 +38,10 @@ public class Day17_1 {
             queue.addAll(getNeighbours(current, map));
         }
 
-        System.out.println(heatLoss);
+        return String.valueOf(heatLoss);
     }
 
-    private static List<Element> getNeighbours(Element element, List<List<Integer>> map) {
+    private List<Element> getNeighbours(Element element, List<List<Integer>> map) {
         List<Element> neighbours = new ArrayList<>();
         Node node = element.node;
 

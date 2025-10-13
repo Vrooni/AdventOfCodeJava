@@ -1,14 +1,11 @@
 package year2023;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Day9_1 {
 
-    public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(args[0]));
+    public String part1(List<String> lines) {
         int result = 0;
 
         for (String line : lines) {
@@ -18,16 +15,16 @@ public class Day9_1 {
 
             for (int i = history.size() - 2; i >= 0; i--) {
                 List<Integer> list = history.get(i);
-                list.add(last(history.get(i + 1)) + last(history.get(i)));
+                list.add(history.get(i + 1).getLast() + history.get(i).getLast());
             }
 
-            result += last(history.get(0));
+            result += history.getFirst().getLast();
         }
 
-        System.out.println(result);
+        return String.valueOf(result);
     }
 
-    private static List<Integer> readInput(String line) {
+    private List<Integer> readInput(String line) {
         List<Integer> input = new ArrayList<>();
 
         for (String number : line.split(" ")) {
@@ -37,7 +34,7 @@ public class Day9_1 {
         return input;
     }
 
-    private static List<List<Integer>> readHistory(List<Integer> input) {
+    private List<List<Integer>> readHistory(List<Integer> input) {
         List<List<Integer>> history = new ArrayList<>();
         history.add(input);
 
@@ -57,13 +54,5 @@ public class Day9_1 {
         }
 
         return history;
-    }
-
-    private static Integer last(List<Integer> list) {
-        if (list.isEmpty()) {
-            return null;
-        }
-
-        return list.get(list.size() - 1);
     }
 }
