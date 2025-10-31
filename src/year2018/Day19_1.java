@@ -1,0 +1,61 @@
+package year2018;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Day19_1 {
+    private record Instruction(String opcode, int a, int b, int c) {}
+
+    public String part1(List<String> input) {
+        input = new ArrayList<>(input);
+        int pointer = Integer.parseInt(input.removeFirst().replace("#ip ", ""));
+
+        List<Instruction> instructions = readInput(input);
+        int[] registers = new int[6];
+
+        runInstructions(instructions, registers, pointer);
+        return String.valueOf(registers[0]);
+    }
+
+    private List<Instruction> readInput(List<String> input) {
+        return input.stream().map(line -> {
+            String[] splitLine = line.split(" ");
+            return new Instruction(splitLine[0],
+                    Integer.parseInt(splitLine[1]),
+                    Integer.parseInt(splitLine[2]),
+                    Integer.parseInt(splitLine[3])
+            );
+        }).toList();
+    }
+
+    private void runInstructions(List<Instruction> instructions, int[] registers, int pointer) {
+        while (registers[pointer] >= 0 && registers[pointer] < instructions.size()) {
+
+            Instruction instruction = instructions.get(registers[pointer]);
+            int a = instruction.a;
+            int b = instruction.b;
+            int c = instruction.c;
+
+            switch (instruction.opcode) {
+                case "addr" -> registers[c] = registers[a] + registers[b];
+                case "addi" -> registers[c] = registers[a] + b;
+                case "mulr" -> registers[c] = registers[a] * registers[b];
+                case "muli" -> registers[c] = registers[a] * b;
+                case "banr" -> registers[c] = registers[a] & registers[b];
+                case "bani" -> registers[c] = registers[a] & b;
+                case "borr" -> registers[c] = registers[a] | registers[b];
+                case "bori" -> registers[c] = registers[a] | b;
+                case "setr" -> registers[c] = registers[a];
+                case "seti" -> registers[c] = a;
+                case "gtir" -> registers[c] = a > registers[b] ? 1 : 0;
+                case "gtri" -> registers[c] = registers[a] > b ? 1 : 0;
+                case "gtrr" -> registers[c] = registers[a] > registers[b] ? 1 : 0;
+                case "eqir" -> registers[c] = a == registers[b] ? 1 : 0;
+                case "eqri" -> registers[c] = registers[a] == b ? 1 : 0;
+                case "eqrr" -> registers[c] = registers[a] == registers[b] ? 1 : 0;
+            }
+
+            registers[pointer] += 1;
+        }
+    }
+}

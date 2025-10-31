@@ -1,6 +1,5 @@
 package year2018;
 
-import year2018.utils.Position;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Day3_2 {
+    public record Position(int x, int y) {}
+
     private record Claim(String id, List<Position> squares) {}
 
     public String part2(List<String> input) {

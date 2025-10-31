@@ -1,8 +1,6 @@
 package year2018;
 
 
-import year2018.utils.Utils;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -27,7 +25,7 @@ public class Day4_1 {
 
     public String part1(List<String> input) {
         List<Record> records = new ArrayList<>(
-                Utils.readLines("04.txt").stream()
+                input.stream()
                         .map(this::getRecord)
                         .toList()
         );
@@ -97,8 +95,8 @@ public class Day4_1 {
                 }
             }
 
-            int maxCount = Utils.max(minutesCount.values());
-            guard.strategyInformation = new StrategyInformation(Utils.getKeyFromValue(minutesCount, maxCount), maxCount);
+            int maxCount = max(minutesCount.values());
+            guard.strategyInformation = new StrategyInformation(getKeyFromValue(minutesCount, maxCount), maxCount);
         }
     }
 
@@ -114,5 +112,16 @@ public class Day4_1 {
         }
 
         return sleepyGuard;
+    }
+
+    public <K, V> K getKeyFromValue(Map<K, V> map, V value) {
+        return map.entrySet().stream()
+                .filter(entry -> value.equals(entry.getValue()))
+                .map(Map.Entry::getKey)
+                .findFirst().get();
+    }
+
+    public int max(Collection<Integer> numbers) {
+        return numbers.stream().mapToInt(i -> i).max().getAsInt();
     }
 }

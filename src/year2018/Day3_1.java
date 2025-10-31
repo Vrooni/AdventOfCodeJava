@@ -1,10 +1,9 @@
 package year2018;
 
-import year2018.utils.Position;
-
 import java.util.*;
 
 public class Day3_1 {
+    public record Position(int x, int y) {}
     private record Claim(String id, List<Position> squares) {}
 
     public String part1(List<String> input) {
