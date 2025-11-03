@@ -1,28 +1,21 @@
 package year2019;
 
-import year2019.utils.Utils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Day9 {
-    public static void main(String[] args) {
-        //Part one
-        String input = Utils.readString("09.txt");
+public class Day9_2 {
+    private long output = -1;
+
+    public String part2(List<String> lines) {
+        String input = lines.getFirst();
         List<Long> program = new ArrayList<>(Arrays.stream(input.split(",")).map(Long::parseLong).toList());
 
-        runProgram(program, 1);
-
-
-        //Part two
-        input = Utils.readString("09.txt");
-        program = new ArrayList<>(Arrays.stream(input.split(",")).map(Long::parseLong).toList());
-
-        runProgram(program, 2);
+        runProgram(program);
+        return String.valueOf(output);
     }
 
-    private static void runProgram(List<Long> program, long input) {
+    private void runProgram(List<Long> program) {
         int i = 0;
         int relativeBase = 0;
 
@@ -37,7 +30,7 @@ public class Day9 {
             switch (opcode) {
                 case 1 -> i = add(program, relativeBase, i, mode1, mode2, mode3);
                 case 2 -> i = mul(program, relativeBase, i, mode1, mode2, mode3);
-                case 3 -> i = set(program, relativeBase, i, mode1, input);
+                case 3 -> i = set(program, relativeBase, i, mode1);
                 case 4 -> i = print(program, relativeBase, i, mode1);
                 case 5 -> i = jumpIfTrue(program, relativeBase, i, mode1, mode2);
                 case 6 -> i = jumpIfFalse(program, relativeBase, i, mode1, mode2);
@@ -50,7 +43,7 @@ public class Day9 {
         }
     }
 
-    private static int add(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
+    private int add(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
         long param1 = getParam(program, mode1, i+1, relativeBase);
         long param2 = getParam(program, mode2, i+2, relativeBase);
         int index = getIndex(program, mode3, i+3, relativeBase);
@@ -59,7 +52,7 @@ public class Day9 {
         return i+4;
     }
 
-    private static int mul(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
+    private int mul(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
         long param1 = getParam(program, mode1, i+1, relativeBase);
         long param2 = getParam(program, mode2, i+2, relativeBase);
         int index = getIndex(program, mode3, i+3, relativeBase);
@@ -68,22 +61,22 @@ public class Day9 {
         return i + 4;
     }
 
-    private static int set(List<Long> program, int relativeBase, int i, int mode1, long input) {
+    private int set(List<Long> program, int relativeBase, int i, int mode1) {
         int index = getIndex(program, mode1, i+1, relativeBase);
-        setValue(program, index, input);
+        setValue(program, index, 2);
         return i + 2;
     }
 
-    private static int print(List<Long> program, int relativeBase, int i, int mode1) {
+    private int print(List<Long> program, int relativeBase, int i, int mode1) {
         long result = getParam(program, mode1, i+1, relativeBase);
         if (result != 0) {
-            System.out.println(result);
+            output = result;
         }
 
         return i + 2;
     }
 
-    private static int jumpIfTrue(List<Long> program, int relativeBase, int i, int mode1, int mode2) {
+    private int jumpIfTrue(List<Long> program, int relativeBase, int i, int mode1, int mode2) {
         long param1 = getParam(program, mode1, i+1, relativeBase);
         long param2 = getParam(program, mode2, i+2, relativeBase);
 
@@ -94,7 +87,7 @@ public class Day9 {
         }
     }
 
-    private static int jumpIfFalse(List<Long> program, int relativeBase, int i, int mode1, int mode2) {
+    private int jumpIfFalse(List<Long> program, int relativeBase, int i, int mode1, int mode2) {
         long param1 = getParam(program, mode1, i+1, relativeBase);
         long param2 = getParam(program, mode2, i+2, relativeBase);
         if (param1 == 0) {
@@ -104,7 +97,7 @@ public class Day9 {
         }
     }
 
-    private static int less(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
+    private int less(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
         long param1 = getParam(program, mode1, i+1, relativeBase);
         long param2 = getParam(program, mode2, i+2, relativeBase);
         int index = getIndex(program, mode3, i+3, relativeBase);
@@ -113,7 +106,7 @@ public class Day9 {
         return i + 4;
     }
 
-    private static int equals(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
+    private int equals(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
         long param1 = getParam(program, mode1, i+1, relativeBase);
         long param2 = getParam(program, mode2, i+2, relativeBase);
         int index = getIndex(program, mode3, i+3, relativeBase);
@@ -122,12 +115,12 @@ public class Day9 {
         return i + 4;
     }
 
-    private static int increaseRB(List<Long> program, int relativeBase, int i, int mode1) {
+    private int increaseRB(List<Long> program, int relativeBase, int i, int mode1) {
         long param1 = getParam(program, mode1, i+1, relativeBase);
         return (int) (relativeBase + param1);
     }
 
-    private static long getValue(List<Long> program, long i) {
+    private long getValue(List<Long> program, long i) {
         if (i >= program.size()) {
             return 0;
         }
@@ -135,7 +128,7 @@ public class Day9 {
         return program.get((int) i);
     }
 
-    private static void setValue(List<Long> program, long i, long value) {
+    private void setValue(List<Long> program, long i, long value) {
         for (int j = program.size(); j <= i; j++) {
             program.add(0L);
         }
@@ -143,7 +136,7 @@ public class Day9 {
         program.set((int) i, value);
     }
 
-    private static long getParam(List<Long> program, int mode, int i, long relativeBase) {
+    private long getParam(List<Long> program, int mode, int i, long relativeBase) {
         long value = getValue(program, i);
 
         return switch (mode) {
@@ -154,7 +147,7 @@ public class Day9 {
         };
     }
 
-    private static int getIndex(List<Long> program, int mode, int i, long relativeBase) {
+    private int getIndex(List<Long> program, int mode, int i, long relativeBase) {
         int value = (int) getValue(program, i);
 
         return switch (mode) {
@@ -164,7 +157,7 @@ public class Day9 {
         };
     }
 
-    private static String pad(String s) {
+    private String pad(String s) {
         StringBuilder sBuilder = new StringBuilder(s);
 
         while (sBuilder.length() < 5) {

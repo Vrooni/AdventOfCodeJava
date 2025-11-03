@@ -5,7 +5,7 @@ import year2019.utils.Utils;
 
 import java.util.*;
 
-public class Day10 {
+public class Day10_2 {
     private record Asteroid(Position position, List<Position> asteroidsInSight) {}
 
     private record AsteroidWithDistance(Position position, Double distance) implements Comparable<AsteroidWithDistance> {
@@ -22,15 +22,10 @@ public class Day10 {
         }
     }
 
-    public static void main(String[] args) {
-        //Part one
-        List<String> map = Utils.readLines("10.txt");
+    public String part2(List<String> map) {
         Map<Position, Asteroid> asteroids = getAsteroids(map);
-
         Position monitoringStation = getMonitoringStation(asteroids);
-        System.out.println(asteroids.get(monitoringStation).asteroidsInSight.size());
 
-        //Part two
         List<DistancesForAngle> distancesForAngles = getDistancesForAngles(asteroids, monitoringStation);
         Collections.sort(distancesForAngles);
         distancesForAngles.forEach(asteroids1 -> Collections.sort(asteroids1.distances));
@@ -40,18 +35,17 @@ public class Day10 {
             for (DistancesForAngle distancesForAngle : distancesForAngles) {
                 if (!distancesForAngle.distances.isEmpty()) {
                     vaporizedAsteroids++;
-                    AsteroidWithDistance vaporized = distancesForAngle.distances.remove(0);
+                    AsteroidWithDistance vaporized = distancesForAngle.distances.removeFirst();
 
                     if (vaporizedAsteroids == 200) {
-                        System.out.println(vaporized.position.x() * 100 + vaporized.position.y());
-                        return;
+                        return String.valueOf(vaporized.position.x() * 100 + vaporized.position.y());
                     }
                 }
             }
         }
     }
 
-    private static List<DistancesForAngle> getDistancesForAngles(Map<Position, Asteroid> asteroids, Position monitoringStation) {
+    private List<DistancesForAngle> getDistancesForAngles(Map<Position, Asteroid> asteroids, Position monitoringStation) {
         Map<Double, DistancesForAngle> distancesForAngles = new HashMap<>();
         for (Position asteroid : asteroids.keySet()) {
             if (asteroid.equals(monitoringStation)) {
@@ -62,34 +56,34 @@ public class Day10 {
             Position vector = new Position(asteroid.x() - monitoringStation.x(), asteroid.y() - monitoringStation.y());
             double distance = Math.sqrt(Math.pow(vector.x(), 2) + Math.pow(vector.y(), 2));
 
-            distancesForAngles.computeIfAbsent(angle, v -> new DistancesForAngle(angle, new ArrayList<>()))
+            distancesForAngles.computeIfAbsent(angle, _ -> new DistancesForAngle(angle, new ArrayList<>()))
                     .distances.add(new AsteroidWithDistance(new Position(asteroid.x(), asteroid.y()), distance));
         }
 
         return new ArrayList<>(distancesForAngles.values().stream().toList());
     }
 
-    private static double getAngle(Position from, Position to) {
+    private double getAngle(Position from, Position to) {
         double angle = Math.toDegrees(Math.atan2((double) from.y() - to.y(), (double) from.x() - to.x()));
         angle -= 90;
         return angle < 0 ? angle + 360 : angle;
     }
 
-    private static Position getMonitoringStation(Map<Position, Asteroid> asteroids) {
+    private Position getMonitoringStation(Map<Position, Asteroid> asteroids) {
         Position monitoringStation = new Position(0, 0);
-        int maxAsteriods = Integer.MIN_VALUE;
+        int maxAsteroids = Integer.MIN_VALUE;
 
         for (Map.Entry<Position, Asteroid> entry : asteroids.entrySet()) {
-            if (entry.getValue().asteroidsInSight.size() > maxAsteriods) {
+            if (entry.getValue().asteroidsInSight.size() > maxAsteroids) {
                 monitoringStation = entry.getKey();
-                maxAsteriods = entry.getValue().asteroidsInSight.size();
+                maxAsteroids = entry.getValue().asteroidsInSight.size();
             }
         }
 
         return monitoringStation;
     }
 
-    private static Map<Position, Asteroid> getAsteroids(List<String> map) {
+    private Map<Position, Asteroid> getAsteroids(List<String> map) {
         Map<Position, Asteroid> asteroids = new HashMap<>();
 
         for (int y = 0; y < map.size(); y++) {
@@ -117,7 +111,7 @@ public class Day10 {
         return asteroids;
     }
 
-    private static boolean inSight(Position p1, Position p2, List<String> map) {
+    private boolean inSight(Position p1, Position p2, List<String> map) {
         if (p1.equals(p2)) {
             return false;
         }

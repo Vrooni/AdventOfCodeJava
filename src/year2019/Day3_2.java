@@ -1,43 +1,26 @@
 package year2019;
 
 import year2019.utils.Position;
-import year2019.utils.Utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Day3 {
-    public static void main(String[] args) {
-        //Part one
-        List<String> input = Utils.readLines("03.txt");
-
+public class Day3_2 {
+    public String part2(List<String> input) {
         List<Position> wire1 = readInput(input.get(0));
         List<Position> wire2 = readInput(input.get(1));
 
-        List<Position> sortWire1 = new ArrayList<>(wire1);
-        List<Position> sortWire2 = new ArrayList<>(wire2);
-        sortWire1.sort(Comparator.comparingInt(o -> Math.abs(o.x()) + Math.abs(o.y())));
-        sortWire2.sort(Comparator.comparingInt(o -> Math.abs(o.x()) + Math.abs(o.y())));
-
-        for (Position position : sortWire1) {
-            if (sortWire2.contains(position)) {
-                System.out.println(Math.abs(position.x()) + Math.abs(position.y()));
-                break;
-            }
-        }
-
-
-        //Part two
         for (int i = 0; i < wire1.size(); i++) {
             Position position = wire1.get(i);
             int j = wire2.indexOf(position);
 
             if (j != -1) {
-                System.out.println(i + j + 2);
-                break;
+                return String.valueOf(i + j + 2);
             }
         }
 
-        //TODO if answer two is wrong, use this
+        return "-1";
+
         /*
         I wasn't sure, if this is possible, so I added the implementation just in case.
         Explanation:  The solution above iterates over the first wire and takes the first matching pair with wire2.
@@ -50,29 +33,29 @@ public class Day3 {
                       7 5 => out of wire2's index (index 6), we can stop continue searching
          */
 
-//        int bound = Integer.MAX_VALUE;
-//        int distance = Integer.MAX_VALUE;
-//        boolean foundFirst = false;
-//
-//        for (int i = 0; i < wire1.size(); i++) {
-//            if (i >= bound) {
-//                break;
-//            }
-//
-//            Position position = wire1.get(i);
-//            int j = wire2.indexOf(position);
-//
-//            if (j != -1) {
-//                bound = foundFirst ? bound : j;
-//                distance = Math.min(distance, i + j + 2);
-//                foundFirst = true;
-//            }
-//        }
-//
-//        System.out.println(distance);
+        /*int bound = Integer.MAX_VALUE;
+        int distance = Integer.MAX_VALUE;
+        boolean foundFirst = false;
+
+        for (int i = 0; i < wire1.size(); i++) {
+            if (i >= bound) {
+                break;
+            }
+
+            Position position = wire1.get(i);
+            int j = wire2.indexOf(position);
+
+            if (j != -1) {
+                bound = foundFirst ? bound : j;
+                distance = Math.min(distance, i + j + 2);
+                foundFirst = true;
+            }
+        }
+
+        return String.valueOf(distance);*/
     }
 
-    private static List<Position> readInput(String input) {
+    private List<Position> readInput(String input) {
         List<Position> wire = new ArrayList<>();
         int x = 0;
         int y = 0;
@@ -103,7 +86,7 @@ public class Day3 {
         return wire;
     }
 
-    private static void addPositions(List<Position> wire, int fromX, int toX, int fromY, int toY, boolean negativeX, boolean negativeY) {
+    private void addPositions(List<Position> wire, int fromX, int toX, int fromY, int toY, boolean negativeX, boolean negativeY) {
         if (negativeY) {
             for (int y = fromY; y >= toY; y--) {
                 addPosition(wire, fromX, toX, negativeX, y);
@@ -115,7 +98,7 @@ public class Day3 {
         }
     }
 
-    private static void addPosition(List<Position> wire, int fromX, int toX, boolean negativeX, int y) {
+    private void addPosition(List<Position> wire, int fromX, int toX, boolean negativeX, int y) {
         if (negativeX) {
             for (int x = fromX; x >= toX; x--) {
                 wire.add(new Position(x, y));
