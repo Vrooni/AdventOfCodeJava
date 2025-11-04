@@ -1,14 +1,13 @@
 package year2019;
 
-import year2019.utils.Utils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Day12 {
+//TODO not ready yet
+public class Day12_2 {
     private static class Coordinate {
         private int x;
         private int y;
@@ -33,14 +32,6 @@ public class Day12 {
     }
 
     private record Moon(Coordinate position, Coordinate velocity) {
-        private int getPot() {
-            return Math.abs(position.x) + Math.abs(position.y) + Math.abs(position.z);
-        }
-
-        private int getKin() {
-            return Math.abs(velocity.x) + Math.abs(velocity.y) + Math.abs(velocity.z);
-        }
-
         private Moon copy() {
             return new Moon(
                     new Coordinate(position.x, position.y, position.z),
@@ -56,41 +47,17 @@ public class Day12 {
         }
     }
 
-    public static void main(String[] args) {
-        //Part one
-        List<String> input = Utils.readLines("12.txt");
+    public String part2(List<String> input) {
         List<Moon> moons = readInput(input);
-
-        for (int i = 0; i < 1000; i++) {
-            calculateVelocity(moons);
-            move(moons);
-        }
-
-        int result = 0;
-        for (Moon moon : moons) {
-            result += moon.getPot() * moon.getKin();
-        }
-
-        System.out.println(result);
-
-
-        //Part two
-        input = Utils.readLines("12.txt");
-        moons = readInput(input);
-
-        Moon moon1 = moons.get(0).copy();
-//        Coordinate p2 = moons.get(1).getInitialPosition();
-//        Coordinate p3 = moons.get(2).getInitialPosition();
-//        Coordinate p4 = moons.get(3).getInitialPosition();
+        Moon moon1 = moons.getFirst().copy();
 
         int before = 0;
         for (int i = 0; true; i++) {
             calculateVelocity(moons);
             move(moons);
 
-            if (moons.get(0).equals(moon1)) {
-                System.out.println(i - before);
-                before = i;
+            if (moons.getFirst().equals(moon1)) {
+                return String.valueOf(i - before);
             }
         }
 
@@ -100,7 +67,7 @@ public class Day12 {
         //dx2(t-1) = px2(t-1) - px1(t-1) / |px2(t-1) - px1(t-1)|
     }
 
-    private static List<Moon> readInput(List<String> input) {
+    private List<Moon> readInput(List<String> input) {
         List<Moon> moons = new ArrayList<>();
 
         for (String line : input) {
@@ -119,7 +86,7 @@ public class Day12 {
         return moons;
     }
 
-    private static void calculateVelocity(List<Moon> moons) {
+    private void calculateVelocity(List<Moon> moons) {
         for (int j = 0; j < moons.size(); j++) {
             for (int k = j+1; k < moons.size(); k++) {
                 Moon moon1 = moons.get(j);
@@ -155,7 +122,7 @@ public class Day12 {
         }
     }
 
-    private static void move(List<Moon> moons) {
+    private void move(List<Moon> moons) {
         for (Moon moon : moons) {
             moon.position.x += moon.velocity.x;
             moon.position.y += moon.velocity.y;

@@ -1,11 +1,11 @@
 package year2019;
 
-import year2019.utils.Position;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Day3_2 {
+    public record Position(int x, int y) {}
+
     public String part2(List<String> input) {
         List<Position> wire1 = readInput(input.get(0));
         List<Position> wire2 = readInput(input.get(1));

@@ -1,11 +1,14 @@
 package year2019;
 
-import year2019.utils.Position;
-import year2019.utils.Utils;
-
-import java.util.*;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Day10_1 {
+    public record Position(int x, int y) {}
+
     private record Asteroid(Position position, List<Position> asteroidsInSight) {}
 
     public String part1(List<String> map) {
@@ -63,7 +66,7 @@ public class Day10_1 {
         }
 
         Position vector = new Position(p2.x() - p1.x(), p2.y() - p1.y());
-        int gcd = Utils.gcd(vector.x(), vector.y());
+        int gcd = gcd(vector.x(), vector.y());
         if (Math.abs(gcd) == 1) {
             return true;
         }
@@ -83,5 +86,12 @@ public class Day10_1 {
                 return false;
             }
         }
+    }
+
+    private int gcd(int a, int b) {
+        BigInteger b1 = BigInteger.valueOf(a);
+        BigInteger b2 = BigInteger.valueOf(b);
+        BigInteger gcd = b1.gcd(b2);
+        return gcd.intValue();
     }
 }

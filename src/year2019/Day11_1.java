@@ -1,41 +1,32 @@
 package year2019;
 
-import year2019.utils.Direction;
-import year2019.utils.Position;
-import year2019.utils.Utils;
-
 import java.util.*;
 
-public class Day11 {
-    public static void main(String[] args) {
-        //Part one
-        String input = Utils.readString("11.txt");
-        List<Long> program = new ArrayList<>(Arrays.stream(input.split(",")).map(Long::parseLong).toList());
+public class Day11_1 {
 
-        System.out.println(runProgram(program, 0).size());
+    public record Position(int x, int y) {}
 
+    public enum Direction {
+        UP, RIGHT, DOWN, LEFT;
 
-        //Part two
-        input = Utils.readString("11.txt");
-        program = new ArrayList<>(Arrays.stream(input.split(",")).map(Long::parseLong).toList());
+        public Direction next() {
+            return values()[(this.ordinal() + 1) % values().length];
+        }
 
-        Map<Position, Boolean> panels = runProgram(program, 1);
-        List<Position> cooridnates = panels.keySet().stream().toList();
-
-        int minX = cooridnates.stream().mapToInt(Position::x).min().getAsInt();
-        int maxX = cooridnates.stream().mapToInt(Position::x).max().getAsInt();
-        int minY = cooridnates.stream().mapToInt(Position::y).min().getAsInt();
-        int maxY = cooridnates.stream().mapToInt(Position::y).max().getAsInt();
-
-        for (int y = minY; y <= maxY; y++) {
-            for (int x = minX; x <= maxX; x++) {
-                System.out.print(panels.getOrDefault(new Position(x, y), false) ? "#" : " ");
-            }
-            System.out.println();
+        public Direction previous() {
+            return values()[(this.ordinal() + values().length - 1) % values().length];
         }
     }
 
-    private static Map<Position, Boolean> runProgram(List<Long> program, int input) {
+    public String part1(List<String> lines) {
+        String input = lines.getFirst();
+        List<Long> program = new ArrayList<>(Arrays.stream(input.split(",")).map(Long::parseLong).toList());
+
+        return String.valueOf(runProgram(program).size());
+    }
+
+    private Map<Position, Boolean> runProgram(List<Long> program) {
+        int input = 0;
         int output = 0;
 
         boolean handleOutput = false;
@@ -95,15 +86,15 @@ public class Day11 {
         return panels;
     }
 
-    private static Direction getNextDirection(int output, Direction direction) {
+    private Direction getNextDirection(int output, Direction direction) {
         return output == 0 ? direction.previous() : direction.next();
     }
 
-    private static int getNextInput(Map<Position, Boolean> panels, Position position) {
+    private int getNextInput(Map<Position, Boolean> panels, Position position) {
         return panels.getOrDefault(position, false) ? 1 : 0;
     }
 
-    private static Position move(Direction direction, int x, int y) {
+    private Position move(Direction direction, int x, int y) {
         switch (direction) {
             case UP -> y--;
             case DOWN -> y++;
@@ -114,7 +105,7 @@ public class Day11 {
         return new Position(x, y);
     }
 
-    private static int add(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
+    private int add(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
         long param1 = getParam(program, mode1, i+1, relativeBase);
         long param2 = getParam(program, mode2, i+2, relativeBase);
         int index = getIndex(program, mode3, i+3, relativeBase);
@@ -123,7 +114,7 @@ public class Day11 {
         return i+4;
     }
 
-    private static int mul(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
+    private int mul(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
         long param1 = getParam(program, mode1, i+1, relativeBase);
         long param2 = getParam(program, mode2, i+2, relativeBase);
         int index = getIndex(program, mode3, i+3, relativeBase);
@@ -132,17 +123,17 @@ public class Day11 {
         return i + 4;
     }
 
-    private static int set(List<Long> program, int relativeBase, int i, int mode1, long input) {
+    private int set(List<Long> program, int relativeBase, int i, int mode1, long input) {
         int index = getIndex(program, mode1, i+1, relativeBase);
         setValue(program, index, input);
         return i + 2;
     }
 
-    private static int print(List<Long> program, int relativeBase, int i, int mode1) {
+    private int print(List<Long> program, int relativeBase, int i, int mode1) {
         return (int) getParam(program, mode1, i+1, relativeBase);
     }
 
-    private static int jumpIfTrue(List<Long> program, int relativeBase, int i, int mode1, int mode2) {
+    private int jumpIfTrue(List<Long> program, int relativeBase, int i, int mode1, int mode2) {
         long param1 = getParam(program, mode1, i+1, relativeBase);
         long param2 = getParam(program, mode2, i+2, relativeBase);
 
@@ -153,7 +144,7 @@ public class Day11 {
         }
     }
 
-    private static int jumpIfFalse(List<Long> program, int relativeBase, int i, int mode1, int mode2) {
+    private int jumpIfFalse(List<Long> program, int relativeBase, int i, int mode1, int mode2) {
         long param1 = getParam(program, mode1, i+1, relativeBase);
         long param2 = getParam(program, mode2, i+2, relativeBase);
         if (param1 == 0) {
@@ -163,7 +154,7 @@ public class Day11 {
         }
     }
 
-    private static int less(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
+    private int less(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
         long param1 = getParam(program, mode1, i+1, relativeBase);
         long param2 = getParam(program, mode2, i+2, relativeBase);
         int index = getIndex(program, mode3, i+3, relativeBase);
@@ -172,7 +163,7 @@ public class Day11 {
         return i + 4;
     }
 
-    private static int equals(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
+    private int equals(List<Long> program, int relativeBase, int i, int mode1, int mode2, int mode3) {
         long param1 = getParam(program, mode1, i+1, relativeBase);
         long param2 = getParam(program, mode2, i+2, relativeBase);
         int index = getIndex(program, mode3, i+3, relativeBase);
@@ -181,12 +172,12 @@ public class Day11 {
         return i + 4;
     }
 
-    private static int increaseRB(List<Long> program, int relativeBase, int i, int mode1) {
+    private int increaseRB(List<Long> program, int relativeBase, int i, int mode1) {
         long param1 = getParam(program, mode1, i+1, relativeBase);
         return (int) (relativeBase + param1);
     }
 
-    private static long getValue(List<Long> program, long i) {
+    private long getValue(List<Long> program, long i) {
         if (i >= program.size()) {
             return 0;
         }
@@ -194,7 +185,7 @@ public class Day11 {
         return program.get((int) i);
     }
 
-    private static void setValue(List<Long> program, long i, long value) {
+    private void setValue(List<Long> program, long i, long value) {
         for (int j = program.size(); j <= i; j++) {
             program.add(0L);
         }
@@ -202,7 +193,7 @@ public class Day11 {
         program.set((int) i, value);
     }
 
-    private static long getParam(List<Long> program, int mode, int i, long relativeBase) {
+    private long getParam(List<Long> program, int mode, int i, long relativeBase) {
         long value = getValue(program, i);
 
         return switch (mode) {
@@ -213,7 +204,7 @@ public class Day11 {
         };
     }
 
-    private static int getIndex(List<Long> program, int mode, int i, long relativeBase) {
+    private int getIndex(List<Long> program, int mode, int i, long relativeBase) {
         int value = (int) getValue(program, i);
 
         return switch (mode) {
@@ -223,7 +214,7 @@ public class Day11 {
         };
     }
 
-    private static String pad(String s) {
+    private String pad(String s) {
         StringBuilder sBuilder = new StringBuilder(s);
 
         while (sBuilder.length() < 5) {

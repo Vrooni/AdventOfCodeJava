@@ -1,10 +1,23 @@
 package year2019;
 
-import year2019.utils.Position;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class Day3_1 {
+    public record Position(int x, int y) implements Comparable<Position> {
+
+        @Override
+        public int compareTo(Position o) {
+            int compareX = Integer.compare(this.x, o.x);
+            if (compareX != 0) {
+                return compareX;
+            }
+
+            return Integer.compare(this.y, o.y);
+        }
+    }
+
     public String part1(List<String> input) {
         List<Position> wire1 = readInput(input.get(0));
         List<Position> wire2 = readInput(input.get(1));
