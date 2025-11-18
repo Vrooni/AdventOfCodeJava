@@ -1,7 +1,5 @@
 package year2022;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.*;
 
 public class Day23_2 {
@@ -79,9 +77,7 @@ public class Day23_2 {
     }
     enum Direction { NORTH, SOUTH, WEST, EAST }
 
-    public static void main(String[] args) throws IOException {
-        //Part two
-        List<String> lines = Utils.readLines(Path.of("src/year2022/files/23.txt"));
+    public String part2(List<String> lines) {
         Set<Position> elves = new HashSet<>();
 
         for (int y = 0; y < lines.size(); y++) {
@@ -103,7 +99,7 @@ public class Day23_2 {
                 Position newPosition = elv.getNewPosition(elves, directions);
 
                 if (newPosition != null) {
-                    moves.computeIfAbsent(newPosition, k -> new ArrayList<>()).add(elv);
+                    moves.computeIfAbsent(newPosition, _ -> new ArrayList<>()).add(elv);
                 }
             }
 
@@ -111,7 +107,7 @@ public class Day23_2 {
             boolean hasChanged = false;
             for (Position move : moves.keySet()) {
                 if (moves.get(move).size() == 1) {
-                    Position elv = moves.get(move).get(0);
+                    Position elv = moves.get(move).getFirst();
 
                     elves.remove(elv);
                     elves.add(move);
@@ -121,17 +117,18 @@ public class Day23_2 {
             }
 
             if (!hasChanged) {
-                System.out.println(i+1);
-                System.exit(0);
+                return String.valueOf(i+1);
             }
 
             //rotate directions
-            switch (directions.get(0)) {
+            switch (directions.getFirst()) {
                 case NORTH -> directions = List.of(Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.NORTH);
                 case SOUTH -> directions = List.of(Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH);
                 case WEST -> directions = List.of(Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.WEST);
                 case EAST -> directions = List.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
             }
         }
+
+        return "-1";
     }
 }

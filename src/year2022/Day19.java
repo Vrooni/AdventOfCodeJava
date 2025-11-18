@@ -1,132 +1,145 @@
 package year2022;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class Day19 {
-    record Blueprint(int id, int oreCosts, int clayCosts, int[] obsidianCosts, int[] geodeCosts) {}
-    record Ressource(int ore, int clay, int obsidian, int geodes) { }
-    enum Robot {
-        ORE, CLAY, OBSIDIAN, GEODE, NONE
-    }
-    public static void main(String[] args) throws IOException {
-        //Part one
-        List<String> lines = Utils.readLines(Path.of("src/year2022/files/19.txt"));
-        List<Blueprint> blueprints = new ArrayList<>();
 
-        for (String line : lines) {
-            line = line.replaceAll("[^0-9]", " ");
-            line = line.trim();
-            line = line.replaceAll(" +", " ");
+    private static final int ORE_ROBOT = 0;
+    private static final int CLAY_ROBOT = 1;
+    private static final int OB_ROBOT = 2;
+    private static final int GEO_ROBOT = 3;
 
-            String[] numbersAsStr = line.split(" ");
-            int[] numbers = Arrays.stream(numbersAsStr).mapToInt(Integer::parseInt).toArray();
-
-            blueprints.add(new Blueprint(numbers[0], numbers[1], numbers[2], new int[]{numbers[3], numbers[4]}, new int[]{numbers[5], numbers[6]}));
-        }
-
-        Map<Robot, Integer> activeRobots = new HashMap<>();
-        activeRobots.put(Robot.ORE, 1);
-        activeRobots.put(Robot.CLAY, 0);
-        activeRobots.put(Robot.OBSIDIAN, 0);
-        activeRobots.put(Robot.GEODE, 0);
-
-        int total = IntStream.range(0, blueprints.size()).parallel().map(index -> {
-            Blueprint blueprint = blueprints.get(index);
-            int result = getObsidian(blueprint, activeRobots, new HashSet<>(), new Ressource(0, 0, 0, 0), 0, 0);
-            System.out.println(index + ": " + result);
-
-            return (index + 1) * result;
-        }).sum();
-
-        System.out.println(total);
-        //Part two
+    public record Blueprint(int nr, int oreCost, int clayOreCost, int obOreCost, int obClayCost, int geoOreCost,
+                            int geoObCost) {
     }
 
-    private static int getObsidian(Blueprint blueprint, Map<Robot, Integer> activeRobots, Set<Robot> possibleRobot, Ressource ressource, int minutes, int bestOverall) {
-        if (minutes == 24) {
-            return ressource.geodes;
-        }
+    public record State(int nrOre, int nrClay, int nrOb, int nrGeo, int nrOreRobot, int nrClayRobot, int nrObRobot,
+                        int nrGeoRobot, int minutesLeft, int goal) {
+    }
 
-        int remaining = 24 - minutes;
-        int bestCase = ressource.geodes + activeRobots.get(Robot.GEODE) * remaining + (remaining * (remaining + 1)) / 2;
-        if (bestCase <= bestOverall) {
+    private Map<State, Integer> cache = new HashMap<>();
+
+    private List<Blueprint> getBlueprints(final List<String> input) {
+        final List<Blueprint> blueprints = new ArrayList<>();
+        final Pattern p = Pattern.compile(
+                "Blueprint (\\d+): Each ore robot costs (\\d+) ore. Each clay robot costs (\\d+) ore. Each obsidian robot costs (\\d+) ore and (\\d+) clay. Each geode robot costs (\\d+) ore and (\\d+) obsidian.");
+        for (final String line : input) {
+            final Matcher m = p.matcher(line);
+            if (m.find()) {
+                blueprints.add(new Blueprint(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)),
+                        Integer.parseInt(m.group(3)), Integer.parseInt(m.group(4)), Integer.parseInt(m.group(5)),
+                        Integer.parseInt(m.group(6)), Integer.parseInt(m.group(7))));
+            }
+        }
+        return blueprints;
+    }
+
+    private int getMaxGeodesForType(final Blueprint b, int minutesLeft, final int goal, int nrOre, int nrClay, int nrOb,
+                                    int nrGeo,
+                                    final int nrOreRobots, final int nrClayRobots, final int nrObRobots, final int nrGeoRobots) {
+        if (minutesLeft == 0) {
+            return nrGeo;
+        }
+        // Stop building a robot if we have more of the resource it builds than we need.
+        final int maxOre = Math.max(b.oreCost(), Math.max(b.clayOreCost(), Math.max(b.obOreCost(), b.geoObCost())));
+        if (goal == ORE_ROBOT && nrOre >= maxOre || goal == CLAY_ROBOT && nrClay >= b.obClayCost()
+                || goal == OB_ROBOT && (nrOb >= b.geoObCost() || nrClay == 0) || goal == GEO_ROBOT && nrOb == 0) {
             return 0;
         }
 
-        //possible robots
-        Set<Robot> newPossibleRobots = new HashSet<>();
+        final State state = new State(nrOre, nrClay, nrOb, nrGeo, nrOreRobots, nrClayRobots, nrObRobots, nrGeoRobots,
+                minutesLeft, goal);
 
-        if (ressource.ore >= blueprint.oreCosts) {
-            newPossibleRobots.add(Robot.ORE);
+        if (cache.containsKey(state)) {
+            return cache.get(state);
         }
-        if (ressource.ore >= blueprint.clayCosts) {
-            newPossibleRobots.add(Robot.CLAY);
-        }
-        if (ressource.ore >= blueprint.obsidianCosts[0] && ressource.clay >= blueprint.obsidianCosts[1]) {
-            newPossibleRobots.add(Robot.OBSIDIAN);
-        }
-        if (ressource.ore >= blueprint.geodeCosts[0] && ressource.obsidian >= blueprint.geodeCosts[1]) {
-            newPossibleRobots.add(Robot.GEODE);
-        }
+        int max = 0;
 
-        //optimizing
-        int possibles = newPossibleRobots.size();
-        newPossibleRobots.removeAll(possibleRobot);
-
-        if (possibles != 4) {
-            newPossibleRobots.add(Robot.NONE);
-        }
-
-        //increase resources
-        Ressource newResources = new Ressource(
-                ressource.ore + activeRobots.get(Robot.ORE),
-                ressource.clay + activeRobots.get(Robot.CLAY),
-                ressource.obsidian + activeRobots.get(Robot.OBSIDIAN),
-                ressource.geodes + activeRobots.get(Robot.GEODE)
-        );
-
-        //create new robot
-        int geode = -1;
-        for (Robot robotToBuild : newPossibleRobots) {
-            Map<Robot, Integer> newActiveRobots = new HashMap<>(activeRobots);
-            Ressource currentResources = newResources;
-
-            if (robotToBuild != Robot.NONE) {
-                newActiveRobots.put(robotToBuild, activeRobots.get(robotToBuild) + 1);
-
-                //decrease ores
-                switch (robotToBuild) {
-                    case ORE -> currentResources = new Ressource(
-                            newResources.ore - blueprint.oreCosts,
-                            newResources.clay, newResources.obsidian,
-                            newResources.geodes);
-                    case CLAY -> currentResources = new Ressource(
-                            newResources.ore - blueprint.clayCosts,
-                            newResources.clay,
-                            newResources.obsidian,
-                            newResources.geodes);
-                    case OBSIDIAN -> currentResources = new Ressource(
-                            newResources.ore - blueprint.obsidianCosts[0],
-                            newResources.clay - blueprint.obsidianCosts[1],
-                            newResources.obsidian,
-                            newResources.geodes);
-                    case GEODE -> currentResources = new Ressource(
-                            newResources.ore - blueprint.geodeCosts[0],
-                            newResources.clay,
-                            newResources.obsidian - blueprint.geodeCosts[1],
-                            newResources.geodes);
+        while (minutesLeft > 0) {
+            if (goal == ORE_ROBOT && nrOre >= b.oreCost()) { // Build ore robot
+                int tmpMax = 0;
+                for (int newGoal = 0; newGoal < 4; newGoal++) {
+                    tmpMax = Math.max(tmpMax,
+                            getMaxGeodesForType(b, minutesLeft - 1, newGoal, nrOre - b.oreCost() + nrOreRobots,
+                                    nrClay + nrClayRobots, nrOb + nrObRobots, nrGeo + nrGeoRobots, nrOreRobots + 1,
+                                    nrClayRobots, nrObRobots, nrGeoRobots));
                 }
-
-                geode = Math.max(geode, getObsidian(blueprint, newActiveRobots, new HashSet<>(), currentResources, minutes + 1, Math.max(geode, bestOverall)));
-            } else {
-                geode = Math.max(geode, getObsidian(blueprint, newActiveRobots, newPossibleRobots, currentResources, minutes + 1, Math.max(geode, bestOverall)));
-
+                max = Math.max(max, tmpMax);
+                cache.put(state, max);
+                return max;
+            } else if (goal == CLAY_ROBOT && nrOre >= b.clayOreCost()) { // Build clay robot
+                int tmpMax = 0;
+                for (int newGoal = 0; newGoal < 4; newGoal++) {
+                    tmpMax = Math.max(tmpMax,
+                            getMaxGeodesForType(b, minutesLeft - 1, newGoal, nrOre - b.clayOreCost() + nrOreRobots,
+                                    nrClay + nrClayRobots, nrOb + nrObRobots, nrGeo + nrGeoRobots, nrOreRobots,
+                                    nrClayRobots + 1, nrObRobots, nrGeoRobots));
+                }
+                max = Math.max(max, tmpMax);
+                cache.put(state, max);
+                return max;
+            } else if (goal == OB_ROBOT && nrOre >= b.obOreCost() && nrClay >= b.obClayCost()) { // Build ob robot
+                int tmpMax = 0;
+                for (int newGoal = 0; newGoal < 4; newGoal++) {
+                    tmpMax = Math.max(tmpMax,
+                            getMaxGeodesForType(b, minutesLeft - 1, newGoal, nrOre - b.obOreCost() + nrOreRobots,
+                                    nrClay - b.obClayCost() + nrClayRobots, nrOb + nrObRobots, nrGeo + nrGeoRobots,
+                                    nrOreRobots, nrClayRobots, nrObRobots + 1, nrGeoRobots));
+                }
+                max = Math.max(max, tmpMax);
+                cache.put(state, max);
+                return max;
+            } else if (goal == GEO_ROBOT && nrOre >= b.geoOreCost() && nrOb >= b.geoObCost()) { // Build geo robot
+                int tmpMax = 0;
+                for (int newGoal = 0; newGoal < 4; newGoal++) {
+                    tmpMax = Math.max(tmpMax,
+                            getMaxGeodesForType(b, minutesLeft - 1, newGoal, nrOre - b.geoOreCost() + nrOreRobots,
+                                    nrClay + nrClayRobots, nrOb - b.geoObCost() + nrObRobots, nrGeo + nrGeoRobots,
+                                    nrOreRobots, nrClayRobots, nrObRobots, nrGeoRobots + 1));
+                }
+                max = Math.max(max, tmpMax);
+                cache.put(state, max);
+                return max;
             }
+            // Can not build a robot, so continue gathering resources.
+            minutesLeft--;
+            nrOre += nrOreRobots;
+            nrClay += nrClayRobots;
+            nrOb += nrObRobots;
+            nrGeo += nrGeoRobots;
+            max = Math.max(max, nrGeo);
         }
+        cache.put(state, max);
+        return max;
+    }
 
-        return geode;
+    private int getMaxGeodes(final Blueprint b, final int nrMinutes) {
+        cache = new HashMap<>();
+        int result = 0;
+        for (int i = 0; i < 4; i++) {
+            result = Math.max(result, getMaxGeodesForType(b, nrMinutes, i, 0, 0, 0, 0, 1, 0, 0, 0));
+        }
+        return result;
+    }
+
+    private int getQualityLevel(final Blueprint b) {
+        return getMaxGeodes(b, 24) * b.nr();
+    }
+
+    public String part2(final List<String> input) {
+        List<Blueprint> blueprints = getBlueprints(input);
+        blueprints = blueprints.subList(0, Math.min(3, blueprints.size()));
+        return String.valueOf(blueprints.stream().mapToInt(b -> getMaxGeodes(b, 32)).reduce(1, (a, b) -> a * b));
+    }
+
+    public String part1(final List<String> input) {
+        final List<Blueprint> blueprints = getBlueprints(input);
+        return String.valueOf(blueprints.stream().mapToInt(this::getQualityLevel).sum());
     }
 }

@@ -1,9 +1,5 @@
 package year2022;
 
-import year2022.Utils;
-
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,11 +13,10 @@ public class Day17_2 {
     record AtIterationState(long iteration, long height) {
     }
 
-    public static void main(String[] args) throws IOException {
-        //Part one
+    public String part2(List<String> lines) {
         Set<Point> cave = new HashSet<>();
         List<Set<Point>> rocks = new ArrayList<>();
-        String jet = Utils.read(Path.of("src/year2022/files/17.txt")).replaceAll("\n", "");
+        String jet = lines.getFirst().replaceAll("\n", "");
         Map<RockMovement, AtIterationState> mapOfStates = new HashMap<>();
 
         rocks.add(Set.of(new Point(0, 0), new Point(1, 0), new Point(2, 0), new Point(3, 0)));
@@ -102,12 +97,11 @@ public class Day17_2 {
             }
         }
 
-        //print(cave);
         long y = cave.stream().mapToLong(point -> point.y).max().orElse(-1);
-        System.out.println(jumped + y + 1);
+        return String.valueOf(jumped + y + 1);
     }
 
-    private static boolean collide(Point position, Set<Point> rock, Set<Point> cave) {
+    private boolean collide(Point position, Set<Point> rock, Set<Point> cave) {
         for (Point p : rock) {
             Point positionOfPoint = new Point(p.x + position.x, p.y + position.y);
             if (cave.contains(positionOfPoint)) {
@@ -118,7 +112,7 @@ public class Day17_2 {
         return false;
     }
 
-    private static Set<Point> getState(Set<Point> cave) {
+    private Set<Point> getState(Set<Point> cave) {
         long y = cave.stream().mapToLong(point -> point.y).max().orElse(-1);
 
         Queue<Point> points = new ArrayDeque<>();
@@ -149,24 +143,5 @@ public class Day17_2 {
 
         long minY = seen.stream().mapToLong(p1 -> p1.y).min().orElse(0);
         return seen.stream().map(p -> new Point(p.x, p.y - minY)).collect(Collectors.toSet());
-    }
-
-    private static void print(Set<Point> cave) {
-        long toY = cave.stream().mapToLong(point -> point.y).max().orElse(0);
-        int toX = 6;
-
-        for (long y = toY; y >= 0; y--) {
-            for (int x = 0; x <= toX; x++) {
-                if (cave.contains(new Point(x, y))) {
-                    System.out.print('#');
-                } else {
-                    System.out.print('.');
-                }
-            }
-
-            System.out.println();
-        }
-
-        System.out.println();
     }
 }

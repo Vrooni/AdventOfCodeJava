@@ -1,7 +1,5 @@
 package year2022;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -15,9 +13,7 @@ public class Day11_2 {
         long inspectedItems = 0;
     }
 
-    public static void main(String[] args) throws IOException {
-        //Part one
-        List<String> lines = Utils.readLines(Path.of("src/year2022/files/11.txt"));
+    public String part2(List<String> lines) {
         List<Monkey> monkeys = new ArrayList<>();
         int modulo = 1;
 
@@ -36,17 +32,8 @@ public class Day11_2 {
 
             line = lines.get(i * 7 + 2).split(": new = old ")[1];
             list = line.split(" ");
-            String[] finalList = list;
-            Function<Long, Long> function = null;
 
-            switch (list[0]) {
-                case "+" -> function = (old) -> (old + (finalList[1].equals("old") ? old : Integer.parseInt(finalList[1])));
-                case "-" -> function = (old) -> (old - (finalList[1].equals("old") ? old : Integer.parseInt(finalList[1])));
-                case "*" -> function = (old) -> (old * (finalList[1].equals("old") ? old : Integer.parseInt(finalList[1])));
-                case "/" -> function = (old) -> (old / (finalList[1].equals("old") ? old : Integer.parseInt(finalList[1])));
-            }
-
-            monkey.operation = function;
+            monkey.operation = getMonkeyOperation(list);
 
 
             line = lines.get(i * 7 + 3).split(": divisible by ")[1];
@@ -78,6 +65,18 @@ public class Day11_2 {
         }
 
         monkeys.sort(Comparator.comparingLong((Monkey i) -> i.inspectedItems).reversed());
-        System.out.println(monkeys.get(0).inspectedItems * monkeys.get(1).inspectedItems);
+        return String.valueOf(monkeys.get(0).inspectedItems * monkeys.get(1).inspectedItems);
+    }
+
+    private static Function<Long, Long> getMonkeyOperation(String[] list) {
+        Function<Long, Long> function = null;
+
+        switch (list[0]) {
+            case "+" -> function = (old) -> (old + (list[1].equals("old") ? old : Integer.parseInt(list[1])));
+            case "-" -> function = (old) -> (old - (list[1].equals("old") ? old : Integer.parseInt(list[1])));
+            case "*" -> function = (old) -> (old * (list[1].equals("old") ? old : Integer.parseInt(list[1])));
+            case "/" -> function = (old) -> (old / (list[1].equals("old") ? old : Integer.parseInt(list[1])));
+        }
+        return function;
     }
 }

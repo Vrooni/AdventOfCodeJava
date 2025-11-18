@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Day22_2 {
+    //TODO rewrite to get generic solution
     /***
      * Diese Klasse muss evtl. angepasst werden
      * Das Würfelnetz aus Input 22 sieht wie folgt aus:
