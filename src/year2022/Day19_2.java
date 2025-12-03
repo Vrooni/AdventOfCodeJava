@@ -3,7 +3,7 @@ package year2022;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class Day19_1 {
+public class Day19_2 {
     private enum Robot {
         ORE, CLAY, OBSIDIAN, GEODE
     }
@@ -16,10 +16,11 @@ public class Day19_1 {
 
     private Map<State, Integer> cache = new HashMap<>();
 
-    public String part1(final List<String> input) {
+    public String part2(final List<String> input) {
         List<Blueprint> blueprints = new ArrayList<>();
 
-        for (String line : input) {
+        for (int i = 0; i < 3; i++) {
+            String line = input.get(i);
             line = line.replaceAll("[^0-9]", " ");
             line = line.trim();
             line = line.replaceAll(" +", " ");
@@ -33,7 +34,12 @@ public class Day19_1 {
             );
         }
 
-        return String.valueOf(blueprints.stream().mapToInt(b -> getMaxGeodes(b) * b.id).sum());
+        int result = 1;
+        for (Blueprint blueprint : blueprints) {
+            result *= getMaxGeodes(blueprint);
+        }
+
+        return String.valueOf(result);
     }
 
     private int getMaxGeodes(Blueprint blueprint) {
@@ -55,7 +61,7 @@ public class Day19_1 {
     private int getMaxGeodesForType(Blueprint blueprint, int minutes, Robot robotToBuy,
                                     int ores, int clay, int obsidian, int geodes,
                                     int oreRobots, int clayRobots, int obsidianRobots, int geodeRobots) {
-        if (minutes == 24) {
+        if (minutes == 32) {
             return geodes;
         }
 
@@ -73,7 +79,7 @@ public class Day19_1 {
         }
 
         // gather materials until we can build that robot
-        for (; minutes < 24; minutes++) {
+        for (; minutes < 32; minutes++) {
 
             boolean buildRobot = canAfford(blueprint, robotToBuy, ores, clay, obsidian);
             ores += oreRobots;
