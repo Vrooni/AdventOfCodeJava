@@ -1,25 +1,26 @@
 package year2022;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Day22_2 {
-    //TODO rewrite to get generic solution
-    /***
-     * Diese Klasse muss evtl. angepasst werden
-     * Das Würfelnetz aus Input 22 sieht wie folgt aus:
+    /**
+     * The cube net looks as follows (As far as I know the cube net is the same for every input):
      *     1,0 2,0
      *     1,1
-     *     1,2
-     * 0,2
+     * 0,2 1,2
      * 0,3
-     * Es sind die Würfelseiten dargestellt. Und in connections.txt ist es wie folgt definiert vonseite-direction-zuseite-neuedirection.
-     * Es ist also pro Richtung definiert, wo ich lande, wenn ich über die Kante gehe
-     * Aufgerufen wird die Datei in #createEdges()
-     ***/
+     * These represent the cube faces. And in connections.txt it is defined as follows:
+     * fromFace–direction–>toFace–new-direction
+     * So for each direction it is defined where I end up when I cross an edge.
+     * The file is called in #createEdges().
+     **/
+
     private static final int WIDTH = 50;
     private record Position(int x, int y) {}
     private enum Element { NONE, EMPTY, WALL }
@@ -90,12 +91,10 @@ public class Day22_2 {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        //Part two
-        List<String> lines = Utils.readLines(Path.of("src/year2022/files/22.txt"));
+    public String part2(List<String> lines) throws IOException {
         List<List<Element>> map = createMap(lines);
         Map<Edge, Edge> edges = createEdges();
-        String moves = lines.get(lines.size() - 1);
+        String moves = lines.getLast();
 
         MyPosition position = moveThrowMap(map, edges, moves);
 
@@ -107,7 +106,7 @@ public class Day22_2 {
             case UP -> directionPoint = 3;
         }
 
-        System.out.println(1000*(position.y+1) + 4*(position.x+1) + directionPoint);
+        return String.valueOf(1000*(position.y+1) + 4*(position.x+1) + directionPoint);
     }
 
     private static List<List<Element>> createMap(List<String> lines) {
@@ -133,8 +132,11 @@ public class Day22_2 {
 
     private static Map<Edge, Edge> createEdges() throws IOException {
         Map<Edge, Edge> edges = new HashMap<>();
-        List<String> lines = Utils.readLines(Path.of("src/year2022/files/connections.txt"));
-        Pattern pattern = Pattern.compile("(\\d),(\\d)-(\\D)-(\\d),(\\d)->(\\D)");
+        List<String> lines = Files.readAllLines(
+                Path.of("src/year2022/connections.txt"),
+                StandardCharsets.UTF_8
+        );
+        Pattern pattern = Pattern.compile("(\\d),(\\d)-(\\D)->(\\d),(\\d)-(\\D)");
 
         for (String line : lines) {
             Matcher matcher = pattern.matcher(line);
@@ -185,41 +187,25 @@ public class Day22_2 {
     }
 
     private static boolean isSame(Direction from, Direction to) {
-        switch (from) {
-            case UP:
-                switch (to) {
-                    case UP, RIGHT:
-                        return true;
-                    case DOWN, LEFT:
-                        return false;
-                }
+        return switch (from) {
+            case UP -> switch (to) {
+                case UP, RIGHT -> true;
+                case DOWN, LEFT -> false;
+            };
+            case DOWN -> switch (to) {
+                case UP, RIGHT -> false;
+                case DOWN, LEFT -> true;
+            };
+            case LEFT -> switch (to) {
+                case LEFT, DOWN -> true;
+                case RIGHT, UP -> false;
+            };
+            case RIGHT -> switch (to) {
+                case LEFT, DOWN -> false;
+                case RIGHT, UP -> true;
+            };
+        };
 
-            case DOWN:
-                switch (to) {
-                    case UP, RIGHT:
-                        return false;
-                    case DOWN, LEFT:
-                        return true;
-                }
-
-            case LEFT:
-                switch (to) {
-                    case LEFT, DOWN:
-                        return true;
-                    case RIGHT, UP:
-                        return false;
-                }
-
-            case RIGHT:
-                switch (to) {
-                    case LEFT, DOWN:
-                        return false;
-                    case RIGHT, UP:
-                        return true;
-                }
-        }
-
-        throw new RuntimeException("Cannot find out anything");
     }
 
     private static MyPosition moveThrowMap(List<List<Element>> map, Map<Edge, Edge> edges, String moves) {
@@ -240,7 +226,6 @@ public class Day22_2 {
                 stepCount.append(moves.charAt(i));
             }
 
-            //System.out.println("Move " + stepCount + " steps");
             currentPosition = doSteps(map, edges, currentPosition, Integer.parseInt(String.valueOf(stepCount)));
 
             if (onlyDigits(moves)) {
@@ -250,22 +235,20 @@ public class Day22_2 {
             //direction
             char turn = moves.charAt(0);
             moves = moves.substring(1);
-            //System.out.print("Turn " + turn);
             switch (currentPosition.direction) {
                 case RIGHT -> currentPosition.direction = turn == 'L' ? Direction.UP : Direction.DOWN;
                 case LEFT -> currentPosition.direction = turn == 'L' ? Direction.DOWN : Direction.UP;
                 case DOWN -> currentPosition.direction = turn == 'L' ? Direction.RIGHT : Direction.LEFT;
                 case UP -> currentPosition.direction = turn == 'L' ? Direction.LEFT : Direction.RIGHT;
             }
-            //System.out.println(", new Direction " + currentPosition.direction);
         }
 
         return currentPosition;
     }
 
     private static int getStartX(List<List<Element>> map) {
-        for (int i = 0; i < map.get(0).size(); i++) {
-            if (map.get(0).get(i) == Element.EMPTY) {
+        for (int i = 0; i < map.getFirst().size(); i++) {
+            if (map.getFirst().get(i) == Element.EMPTY) {
                 return i;
             }
         }
@@ -307,29 +290,6 @@ public class Day22_2 {
         }
 
         return myPosition;
-    }
-
-    private static void printMap(List<List<Element>> map, MyPosition position) {
-        for (int y = 0; y < map.size(); y++) {
-            for (int x = 0; x < map.get(y).size(); x++) {
-
-                if (position.x == x && position.y == y) {
-                    System.out.print("X");
-                    continue;
-                }
-
-                Element element = map.get(y).get(x);
-                switch (element) {
-                    case NONE -> System.out.print(" ");
-                    case EMPTY -> System.out.print(".");
-                    case WALL -> System.out.print("#");
-                }
-            }
-
-            System.out.println();
-        }
-
-        System.out.println();
     }
 
     private static boolean onlyDigits(String s) {
